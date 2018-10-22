@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+ body {
+     font: 10px sans-serif;
+     text-align: center;
+ }
+
+ .axis path,
+ .axis line {
+     fill: none;
+     stroke: #000;
+     shape-rendering: crispEdges;
+ }
+
+ .point {
+     fill: steelblue;
+     stroke: #000;
+ }
+
+ .am-point {
+     fill: steelblue;
+     stroke: #000;
+ }
+
+</style>
+<body>
+    <script src="//d3js.org/d3.v4.min.js"></script>
+    <script>
+
+
+     var _transitions = [
+         {
+             transitionBackward: function() {
+                 d3.select("body").select("svg").transition()
+                   .duration(750).call(zoom.transform, d3.zoomIdentity);
+             },
+             transitionForward: function() {
+                 //d3.select("body").select("svg").transition()
+                 //.duration(750).call(zoom.transform, d3.zoomIdentity.scale(30).translate(100,-100));
+                 d3.select("body").select("svg").transition()
+                   .duration(750).call(zoom.transform,
+                                       d3.zoomIdentity
+                                         .scale(10)
+                                         .translate(0,-yScale(yScale.domain()[1]/10))
+                                         .translate(-xScale(50), 0)
+                   );
+             },
+             index: 0
+         },
+         {
+             transitionBackward: function() {
+                 //d3.select("body").select("svg").transition()
+                 //.duration(750).call(zoom.transform, d3.zoomIdentity.scale(30).translate(100,-100));
+                 d3.select("body").select("svg").transition()
+                   .duration(750).call(zoom.transform,
+                                       d3.zoomIdentity
+                                         .scale(10)
+                                         .translate(0,-yScale(yScale.domain()[1]/10))
+                                         .translate(-xScale(50), height-yScale(18))
+                   );
+             },
+             transitionForward: function() {
+                 //d3.select("body").select("svg").transition()
+                 //.duration(750).call(zoom.transform, d3.zoomIdentity.scale(30).translate(100,-100));
+                 d3.select("body").select("svg").transition()
+                   .duration(750).call(zoom.transform,
+                                       d3.zoomIdentity
+                                         .scale(100)
+                                         .translate(0,-yScale(yScale.domain()[1]/100))
+                                         .translate(-xScale(80), height-yScale(29))
+                   );
+             },
+             index: 1
+         },
+     ];
+
+     function delinearize(x, y) {
+         return y - (x+2)/3;
+     }
+
+     var margin = {top: 20, right: 20, bottom: 30, left: 40},
+         width = 960 - margin.left - margin.right,
+         height = 500 - margin.top - margin.bottom;
+
+     var xScale = d3.scaleLinear()
+                    .range([0, width]);
+
+     var yScale = d3.scaleLinear()
+                    .range([height, 0]);
+
+     var xAxis = d3.axisBottom(xScale);
+     var yAxis = d3.axisLeft(yScale);
+
+     var gX;
+     var gY;
+
+     var svg = d3.select("body").append("svg")
+                 .attr("width", width + margin.left + margin.right)
+                 .attr("height", height + margin.top + margin.bottom)
+                 .append("g")
+                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+     var chart = svg.append("g");
+
+     var zoom = d3.zoom()
+                  .scaleExtent([1, 40])
+     //.translateExtent([[0, 0], [width, height]])
+                  .on("zoom", zoomed);
+
+     d3.select("body").select("svg").call(zoom);
+
+     function zoomed() {
+         chart.attr("transform", d3.event.transform);
+         gX.call(xAxis.scale(d3.event.transform.rescaleX(xScale)));
+         gY.call(yAxis.scale(d3.event.transform.rescaleY(yScale)));
+     }
+
+     d3.tsv("compare_degrees.tsv", function(error, data) {
+         if (error) throw error;
+
+         // Coerce the data to numbers.
+         data.forEach(function(d) {
+             d.N = +d.N;
+             d.wl_1gons = +d.wl_1gons;
+         });
+
+         // Compute the scales’ domains.
+         xScale.domain(d3.extent(data, function(d) { return d.N; })).nice();
+         yScale.domain(d3.extent(data, function(d) { return delinearize(d.N, d.wl_1gons); })).nice();
+
+         // Add the x-axis.
+         gX = svg.append("g")
+                 .attr("transform", function() { return "translate(" + 0 + "," + height + ")" })
+                 .call(xAxis);
+
+         // Add the y-axis.
+         gY = svg.append("g")
+                 .call(yAxis);
+
+         // Add the points!
+         chart.append("path")
+              .datum(data)
+              .attr("fill", "none")
+              .attr("stroke", "steelblue")
+              .attr("vector-effect", "non-scaling-stroke")
+              .attr("stroke-linejoin", "round")
+              .attr("stroke-linecap", "round")
+              .attr("stroke-width", 1.5)
+              .attr("d", d3.line()
+                           .x(function(d) { return xScale(d.N); })
+                           .y(function(d) { return yScale(delinearize(d.N, d.wl_1gons)); }));
+
+     });
+
+     d3.tsv("compare_degrees.tsv", function(error, data) {
+         if (error) throw error;
+
+         // Coerce the data to numbers.
+         data.forEach(function(d) {
+             d.N = +d.N;
+             d.am_1gons = +d.am_1gons;
+         });
+
+         data = data.filter(d => !isNaN(d.am_1gons));
+
+         // Add the points!
+         chart.append("path")
+              .datum(data)
+              .attr("fill", "none")
+              .attr("stroke", "orange")
+              .attr("vector-effect", "non-scaling-stroke")
+              .attr("stroke-linejoin", "round")
+              .attr("stroke-linecap", "round")
+              .attr("stroke-width", 1.5)
+              .attr("d", d3.line()
+                           .x(function(d) { return xScale(d.N); })
+                           .y(function(d) { return yScale(delinearize(d.N, d.am_1gons)); }));
+     });
+
+     d3.tsv("compare_degrees.tsv", function(error, data) {
+         if (error) throw error;
+
+         // Coerce the data to numbers.
+         data.forEach(function(d) {
+             d.N = +d.N;
+             d.uf_1gons = +d.uf_1gons;
+         });
+
+         data = data.filter(d => !isNaN(d.uf_1gons));
+
+         // Add the points!
+         chart.append("path")
+              .datum(data)
+              .attr("fill", "none")
+              .attr("stroke", "green")
+              .attr("vector-effect", "non-scaling-stroke")
+              .attr("stroke-linejoin", "round")
+              .attr("stroke-linecap", "round")
+              .attr("stroke-width", 1.5)
+              .attr("d", d3.line()
+                           .x(function(d) { return xScale(d.N); })
+                           .y(function(d) { return yScale(delinearize(d.N, d.uf_1gons)); }));
+     });
+
+    </script>

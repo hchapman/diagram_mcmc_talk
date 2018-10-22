@@ -1,0 +1,74 @@
+%%% Flat Reidemiester 2 moves, with arcs labeled as in original paper
+
+\documentclass{standalone}
+\usepackage{amsmath}
+
+\input{markov_header.tex}
+
+\usepackage{tikz}
+\usetikzlibrary{calc,decorations,arrows.meta,decorations.markings,decorations.pathmorphing,backgrounds,hobby,knots}
+
+\input{markov_tikz.tex}
+
+\begin{document}
+\begin{tikzpicture}
+  \begin{scope}[xshift=-1.25in]
+    \small
+    \node (x) at (0,-0.3) {};
+    \node (y) at (0,0.3) {};
+    \node (e1) at (-1,-1) {};
+    \node (e2) at (1,-1) {};
+    \node (e3) at (1,1) {};
+    \node (e4) at (-1,1) {};
+
+    \draw[very thick,startarc={-1}{\arccolor}] (e1.center) .. controls +(60:.4) and +(180:.4) .. (x.center)
+    node [right,pos=0.2] {\contour{white}{\(a_2\)}};
+    \draw[very thick,endarc={1}{\rootcolor}] (x.center) .. controls +(0:.4) and +(120:.4) .. (e2.center)
+    node [right,pos=0.8] {\contour{white}{\(a_1\)}};
+
+    \draw[very thick,startarc={-1}{\arccolor}] (e3.center) .. controls +(-120:.4) and +(0:.4) .. (y.center)
+    node [left,pos=0.2] {\contour{white}{\(a_4\)}};
+    \draw[very thick,endarc={1}{\oppcolor}] (y.center) .. controls +(180:.4) and +(-60:.4) .. (e4.center)
+    node [left,pos=0.8] {\contour{white}{\(a_3\)}};
+  \end{scope}
+
+  \begin{scope}[xshift=1.53in]
+    \small
+    \node (x) at (-1,0) {};
+    \node (y) at (1,0) {};
+    \node (e1) at (-1.5,-1) {};
+    \node (e2) at (1.5,-1) {};
+    \node (e3) at (1.5,1) {};
+    \node (e4) at (-1.5,1) {};
+
+
+    \draw[very thick, fwdarcs={-1}{0.5}{\arccolor}{\arccolor}] (e1.center) -- (x.center)
+    node [right,pos=0.1] {\contour{white}{\(a_2\)}}
+    node [left,pos=0.7] {\contour{white}{\(a_9\)}};
+    \draw[very thick, fwdarcs={-1}{0.5}{\rootcolor}{\arccolor}] (x.center) .. controls +(60:1) and +(120:1) .. (y.center)
+    node [right,pos=0.1] {\contour{white}{\(a_6\)}}
+    node [above,pos=0.8] {\contour{white}{\(a_5\)}};
+    \draw[very thick, fwdarcs={-1}{0.5}{\arccolor}{\arccolor}] (y.center) -- (e2.center)
+    node [left,pos=0.7] {\contour{white}{\(a_{12}\)}}
+    node [right,pos=0.9] {\contour{white}{\(a_1\)}};
+
+    \draw[very thick, fwdarcs={-1}{0.5}{\arccolor}{\arccolor}] (e3.center) -- (y.center)
+    node [left,pos=0.1] {\contour{white}{\(a_4\)}}
+    node [right,pos=0.7] {\contour{white}{\(a_{11}\)}};
+    \draw[very thick, fwdarcs={-1}{0.5}{\arccolor}{\arccolor}] (y.center) .. controls +(-120:1) and +(-60:1) .. (x.center)
+    node [left,pos=0.1] {\contour{white}{\(a_8\)}}
+    node [below,pos=0.8] {\contour{white}{\(a_7\)}};
+    \draw[very thick, fwdarcs={-1}{0.5}{\arccolor}{\arccolor}] (x.center) -- (e4.center)
+    node [right,pos=0.7] {\contour{white}{\(a_{10}\)}}
+    node [left,pos=0.9] {\contour{white}{\(a_3\)}};
+
+    \draw[fill=black] (x) circle [radius=3pt];
+    \draw[fill=black] (y) circle [radius=3pt];
+  \end{scope}
+
+  \draw[->] (-.6in,0.1) -- (.6in,0.1)
+  node [above,pos=0.5] {\(\RIIp(M,a_1,a_3)\)};
+  \draw[->] (.6in,-0.1) -- (-.6in,-0.1)
+  node [below,pos=0.5] {\(\RIIm(M',a_6)\)};
+\end{tikzpicture}
+\end{document}

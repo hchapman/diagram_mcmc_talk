@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<body>
+    <script src="//d3js.org/d3.v4.min.js"></script>
+    <script src="js/d3-legend.min.js"></script>
+    <script src="LinePlot.js"></script>
+    <link rel="stylesheet" type="text/css" href="LinePlot.css">
+    <link rel="stylesheet" type="text/css" href="gauss_diagram.css">
+
+    <div>
+        <input type="range" min="0" class="slider" style="width: 100%;">
+    </div>
+    <div id="visualization"></div>
+    <script>
+
+     dat = {"g": [[0, 2, 2, 3, 4, 4, 5, 5, 3, 0, 1, 1],
+                  {"0": -1, "1": 1, "2": -1, "3": 1, "4": 1, "5": -1}],
+            "t": 33};
+
+     var margin = 20;
+     var width = 100;
+     var height = 100;
+
+     const visualization = d3.select('#visualization');
+     const visualizationDiv = visualization.node();
+     const svg = visualization.append('svg')
+                              .attr("viewBox", [-(width+margin)/2, -(height+margin)/2,
+                                                width+margin, height+margin])
+                              .attr("font-size", 10)
+                              .attr("font-family", "sans-serif");
+
+     const g = svg.append('g');
+     const edgeG = g.append('g');
+     const nodeG = g.append('g');
+
+     var scaleC = d3.scaleLinear()
+                    .domain([0, dat.g[0].length])
+                    .range([0, 2*Math.PI]);
+
+     var scaleR = d3.scaleLinear()
+                    .domain([-1, 1])
+                    .range([-width/2, width/2]);
+
+     nodes = dat.g[0].map( (d,i) => { return {
+         'index': i,
+         'edge': d,
+         'x': Math.cos(scaleC(i)),
+         'y': Math.sin(scaleC(i))
+     }} );
+
+     edges = [];
+
+     console.log(nodes);
+     nodes.forEach( function(d) {
+         if(!edges[d.edge]) {
+             edges[d.edge] = {
+                 'index': d.edge,
+                 'source': d,
+             };
+         } else {
+             edges[d.edge].target = d;
+         }
+     } );
+
+     var radius = width/2;
+
+     console.log(edges);
+
+     g.append('circle')
+      .attr('cx', 0)
+      .attr('cy', 0)
+      .attr('r', width/2)
+      .attr('fill', 'none')
+      .attr('style', 'stroke:black; stroke-width:0.5;');
+
+     var gaussFrames = d3.scaleThreshold();
+
+
+     function changeFrame(t) {
+         var frame = gaussFrames(t);
+         var edges = frame.edges;
+         var nodes = frame.nodes;
+         var scaleC = frame.scaleC;
+
+         var circleEdges = edgeG.selectAll('.circle-edge')
+                                .data(edges);
+
+
+         circleEdges
+             .enter()
+             .append('path')
+             .attr('style', '')
+             .classed('circle-edge', true)
+             .merge(circleEdges)
+             .classed('edge-positive', d => d.sign > 0)
+             .classed('edge-negative', d => d.sign < 0)
+             .attr('d', d => {
+                 var x1 = scaleR(d.source.x);
+                 var x2 = scaleR(d.target.x);
+                 var y1 = scaleR(d.source.y);
+                 var y2 = scaleR(d.target.y);
+                 var path = d3.path();
+                 path.moveTo(x1, y1);
+                 var theta = scaleC(d.source.index-d.target.index);
+                 if (Math.abs(Math.abs(theta) - Math.PI) < 0.0001) {
+                     path.lineTo(x2, y2);
+                 } else {
+                     var r = scaleR(Math.abs(Math.tan(theta/2)));
+                     path.arcTo(0, 0, x2, y2, r);
+                 }
+
+                 return path.toString();
+             });
+
+         circleEdges.exit().remove();
+
+         var circleNodes = nodeG.selectAll('.circle-node')
+                                .data(nodes);
+
+         circleNodes
+             .enter()
+             .append('circle')
+             .classed('circle-node', true)
+             .attr('r', 1)
+             .attr('fill', 'black')
+             .merge(circleNodes)
+             .attr('cx', d => scaleR(d.x))
+             .attr('cy', d => scaleR(d.y));
+
+         circleNodes.exit().remove();
+     };
+
+     var t;
+     d3.json("gauss_frames.json", function(data) {
+         gaussFrames.domain(data.slice(1).map( d => d.t )) // <-- slo-mo + failed transitions
+         //gaussFrames.domain(data.slice(1).map( (d,i) => i+1 )) // <-- skip fails
+                    .range(data.map( function(rawD) {
+                        var scaleC = d3.scaleLinear()
+                                       .domain([0, rawD.g[0].length])
+                                       .range([0, 2*Math.PI]);
+
+                        var nodes = rawD.g[0].map( (d,i) => { return {
+                            'index': i,
+                            'edge': d,
+                            'sign': rawD.g[1][d],
+                            'x': Math.cos(scaleC(i)),
+                            'y': Math.sin(scaleC(i))
+                        }} );
+
+                        var edges = [];
+
+                        nodes.forEach( function(d) {
+                            if(!edges[d.edge]) {
+                                edges[d.edge] = {
+                                    'index': d.edge,
+                                    'source': d,
+                                    'sign': d.sign,
+                                };
+                            } else {
+                                edges[d.edge].target = d;
+                            }
+                        } );
+
+                        return {
+                            'nodes': nodes,
+                            'edges': edges,
+                            'scaleC': scaleC,
+                        };
+                    } ));
+
+
+         var maxFrame = d3.max(gaussFrames.domain());
+         var slider = d3.select(".slider");
+
+         //changeFrame(3000);
+
+         var t;
+         var fps = 240;
+         var fpms = fps/1000;
+         function animate(startFrame, mul) {
+             t = d3.timer(function(elapsed) {
+                 var frame = startFrame + mul*elapsed*fpms;
+
+                 if (frame > maxFrame) {
+                     t.stop();
+                     animate(maxFrame, -1);
+                     return;
+                 } else if (frame < 0) {
+                     t.stop()
+                     animate(0, 1);
+                 }
+
+                 changeFrame(frame);
+                 slider.property('value', frame);
+             });
+         }
+
+         slider.attr('max', maxFrame);
+         slider.on('input', function(e) {
+             t.stop();
+             changeFrame(this.value);
+         });
+         slider.on('change', function(e) {
+             console.log(this.value);
+             animate(+this.value, 1);
+         });
+
+         animate(0, 1);
+
+     });
+
+    </script>

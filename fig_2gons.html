@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+ body {
+     font-size: 26px;
+     font-family: 'Source Sans Pro', Helvetica, sans-serif;
+     text-align: center;
+ }
+
+ .axis path,
+ .axis line {
+     fill: none;
+     stroke: #000;
+     shape-rendering: crispEdges;
+ }
+
+ .error-line {
+     stroke: #000;
+ }
+
+ .point {
+     fill: steelblue;
+     stroke: #000;
+ }
+
+ .area {
+     opacity: .2;
+ }
+
+ .path-data {
+     stroke-width: 2px;
+     vector-effect: non-scaling-stroke;
+ }
+
+ .am-point {
+     fill: steelblue;
+     stroke: #000;
+ }
+
+ .tick line {
+     stroke: #C0C0BB;
+ }
+ .tick text, .legendCells text {
+     fill: #8E8883;
+     font-size: 20pt;
+     font-family: 'Source Sans Pro', Helvetica, sans-serif;
+ }
+
+ .axis-label, .legend-label {
+     fill: #635F5D;
+     font-size: 28pt;
+     font-family: 'Source Sans Pro', Helvetica, sans-serif;
+ }
+
+ #visualization {
+     position: fixed;
+     left: 0px;
+     right: 0px;
+     top: 0px;
+     bottom: 0px;
+ }
+
+ .path-data.wang-landau {
+     stroke: steelblue;
+ }
+ .swatch.wang-landau, .area.wang-landau {
+     fill: steelblue;
+ }
+
+ .path-data.uniform {
+     stroke: orange;
+ }
+ .swatch.uniform, .area.uniform {
+     fill: orange;
+ }
+
+ .path-data.allmaps {
+     stroke: green;
+ }
+ .swatch.allmaps, .area.allmaps {
+     fill: green;
+ }
+
+
+</style>
+<body>
+    <script src="//d3js.org/d3.v4.min.js"></script>
+    <script src="js/d3-legend.min.js"></script>
+
+    <div id="visualization"></div>
+    <script>
+
+     function delinearize(x, y) {
+         return y - (x+2)/6;
+     }
+
+     const LinePlot = (() => {
+         const xScale = d3.scaleLinear();
+         const yScale = d3.scaleLinear();
+
+         const xAxis = d3.axisBottom(xScale).tickArguments([5]);
+         const yAxis = d3.axisLeft(yScale).tickArguments([5]);
+
+         let margin = {top: 20, right: 40, bottom: 120, left: 120};
+
+         let data;
+         let width;
+         let height;
+
+         let xLabel;
+         let yLabel;
+
+         let xAxisLabelOffset = 100;
+         let yAxisLabelOffset = -90;
+
+         let xRawDomain = [0, 100];
+         let yRawDomain = [-3, 1];
+
+         let lines = [];
+         let g;
+
+         let xAxisG;
+         let yAxisG;
+
+         function to_filtered_linedata(l, data) {
+             return d3.line()
+                      .x(d => xScale(l.x(d)))
+                      .y(d => yScale(l.y(d)))(data.filter(d => !isNaN(l.y(d))))
+         };
+
+         function to_filtered_areaerror(l, data) {
+             return d3.area()
+                      .x(d => xScale(l.x(d)))
+                      .y0(d => yScale(l.y(d) - l.yerr(d)))
+                      .y1(d => yScale(l.y(d) + l.yerr(d)))(data.filter(d => !isNaN(l.y(d))));
+         };
+
+         const my = selection => {
+             const innerWidth = width - margin.left - margin.right;
+             const innerHeight = height - margin.top - margin.bottom;
+
+             g = selection.selectAll('.container').data([null]);
+             const gEnter = g.enter().append('g').attr('class', 'container');
+
+             g = gEnter
+                 .merge(g)
+                 .attr('transform', `translate(${margin.left}, ${margin.top})`);
+
+             const xAxisGEnter = gEnter.append('g').attr('class', 'x-axis');
+             xAxisG = xAxisGEnter
+                 .merge(g.select('.x-axis'))
+                 .attr('transform', `translate(0, ${innerHeight})`);
+             xAxisGEnter
+                 .append('text')
+                 .attr('class', 'axis-label')
+                 .attr('y', xAxisLabelOffset)
+                 .style('text-anchor', 'middle')
+                 .merge(xAxisG.select('.axis-label'))
+                 .attr('x', innerWidth / 2)
+                 .text(xLabel);
+
+             const yAxisGEnter = gEnter.append('g').attr('class', 'y-axis');
+             yAxisG = yAxisGEnter
+                 .merge(g.select('.y-axis'));
+             yAxisGEnter
+                 .append('text')
+                 .attr('class', 'axis-label')
+                 .attr('y', yAxisLabelOffset)
+                 .style('text-anchor', 'middle')
+                 .merge(yAxisG.select('.axis-label'))
+                 .attr('x', -innerHeight / 2)
+                 .attr('transform', `rotate(-90)`)
+                 .text(yLabel);
+
+             xScale
+                 .domain(xRawDomain)
+                 .range([0, innerWidth])
+                 .nice();
+
+             yScale
+                 .domain(yRawDomain)
+                 .range([innerHeight, 0])
+                 .nice();
+
+             xAxisG.call(xAxis);
+             yAxisG.call(yAxis);
+
+             g.append("clipPath")
+              .attr("id", "clip")
+              .append("rect")
+              .attr("width", innerWidth)
+              .attr("height", innerHeight)
+
+             const errors = g.selectAll('.path-error').data(lines);
+             errors
+                 .enter()
+                 .append("path")
+                 .attr("class", l => l.cls)
+                 .classed("area", true)
+                 .classed("path-error", true)
+                 .attr("clip-path", "url(#clip)");
+
+             g.selectAll('.path-error')
+                 .attr("d", l => to_filtered_areaerror(l, data));
+
+             const paths = g.selectAll('.path-data').data(lines);
+             paths
+                 .enter()
+                 .append('path')
+                 .attr('fill', 'none')
+                 .attr('class', l => l.cls)
+                 .classed('path-data', true)
+                 .classed('chart-zoom', true)
+                 .attr("clip-path", "url(#clip)");
+             g.selectAll('.path-data')
+                 .attr('d', l => to_filtered_linedata(l, data));
+
+             var ordinal = d3.scaleOrdinal()
+                             .domain(lines.map(l => l.title))
+                             .range(lines.map(l => l.cls));
+
+             let legend = d3.legendColor()
+                            .useClass(true)
+                            .scale(ordinal);
+
+
+             g.append("g")
+              .attr("class", "legend")
+              .attr("transform", "translate(20,20)");
+
+             g.select('.legend')
+             .call(legend);
+         };
+
+         my.addLine = function(line) {
+             lines.push(line);
+             return my;
+         }
+
+         my.margin = function(_) {
+             return arguments.length ? (margin = _, my) : margin;
+         };
+
+         my.data = function(_) {
+             return arguments.length ? (data = _, my) : data;
+         };
+
+         my.width = function(_) {
+             return arguments.length ? (width = _, my) : width;
+         };
+
+         my.height = function(_) {
+             return arguments.length ? (height = _, my) : height;
+         };
+
+         my.xValue = function(_) {
+             return arguments.length ? (xValue = _, my) : xValue;
+         };
+
+         my.xLabel = function(_) {
+             return arguments.length ? (xLabel = _, my) : xLabel;
+         };
+
+         my.yValue = function(_) {
+             return arguments.length ? (yValue = _, my) : yValue;
+         };
+
+         my.yLabel = function(_) {
+             return arguments.length ? (yLabel = _, my) : yLabel;
+         };
+
+         my.colorValue = function(_) {
+             return arguments.length ? (colorValue = _, my) : colorValue;
+         };
+
+         my.colorLabel = function(_) {
+             return arguments.length ? (colorLabel = _, my) : colorLabel;
+         };
+
+         my.colorLegendX = function(_) {
+             return arguments.length ? (colorLegendX = _, my) : colorLegendX;
+         };
+
+         my.colorLegendY = function(_) {
+             return arguments.length ? (colorLegendY = _, my) : colorLegendY;
+         };
+
+         my.colorLegendLabelX = function(_) {
+             return arguments.length ? (colorLegendLabelX = _, my) : colorLegendLabelX;
+         };
+
+         my.colorLegendLabelY = function(_) {
+             return arguments.length ? (colorLegendY = _, my) : colorLegendY;
+         };
+
+         my.xAxisLabelOffset = function(_) {
+             return arguments.length ? (xAxisLabelOffset = _, my) : xAxisLabelOffset;
+         };
+
+         my.yAxisLabelOffset = function(_) {
+             return arguments.length ? (yAxisLabelOffset = _, my) : yAxisLabelOffset;
+         };
+
+         my.circleOpacity = function(_) {
+             return arguments.length ? (circleOpacity = _, my) : circleOpacity;
+         };
+
+         my.circleRadius = function(_) {
+             return arguments.length ? (circleRadius = _, my) : circleRadius;
+         };
+
+         my.zoomTo = function(x0, y0, x1, y1) {
+             xRawDomain = [x0, x1];
+             yRawDomain = [y0, y1];
+
+             xScale.domain(xRawDomain);
+             yScale.domain(yRawDomain);
+             var t = g.transition().duration(750);
+             xAxisG.transition(t).call(xAxis);
+             yAxisG.transition(t).call(yAxis);
+
+             g.selectAll('.path-error').transition(t)
+              .attr("d", l => to_filtered_areaerror(l, data));
+
+             d3.selectAll(".path-data").transition(t)
+               .attr('d', l => to_filtered_linedata(l, data));
+
+         }
+
+         return my;
+     });
+
+     const linePlot = LinePlot();
+
+     // transitions for reveal.js fragments
+     var _transitions = [
+         {
+             transitionBackward: function() {
+                 linePlot.zoomTo(0, -3, 100, 1)
+             },
+             transitionForward: function() {
+                 linePlot.zoomTo(50, -3, 95, -1);
+             },
+             index: 0
+         },
+         {
+             transitionBackward: function() {
+                 linePlot.zoomTo(50, 0, 95, 2.0);
+             },
+             transitionForward: function() {
+                 linePlot.zoomTo(84, -2.6, 96, -2);
+             },
+             index: 1
+         },
+         {
+             transitionBackward: function() {
+                 linePlot.zoomTo(84, 1.7, 96, 2);
+             },
+             transitionForward: function() {
+                 linePlot.zoomTo(0, -15, 500, 1);
+             },
+             index: 2
+         },
+     ];
+
+     function main() {
+         const visualization = d3.select('#visualization');
+         const visualizationDiv = visualization.node();
+         const svg = visualization.append('svg');
+
+         linePlot
+             .xValue(d => d.N)
+             .yValue(d => d.wl_2gons)
+             .xLabel("Number of Crossings")
+             .yLabel("Normalized Number of Monogons");
+
+         const row = d => {
+             d.N = +d.N;
+             d.wl_2gons = +d.wl_2gons;
+             d.wl_2gons_err = +d.wl_2gons_err;
+
+             d.uf_2gons = +d.uf_2gons;
+             d.uf_2gons_err = +d.uf_2gons_err;
+
+             d.am_2gons = +d.am_2gons;
+             d.am_2gons_err = +d.am_2gons_err;
+             return d;
+         }
+
+         linePlot.addLine({
+             title: "Wang Landau",
+             cls: 'wang-landau',
+             x: (d) => { return d.N; },
+             y: (d) => { return delinearize(d.N, d.wl_2gons); },
+             yerr: (d) => d.wl_2gons_err,
+         });
+
+         linePlot.addLine({
+             title: "Uniform",
+             cls: 'uniform',
+             x: (d) => { return d.N; },
+             y: (d) => { return delinearize(d.N, d.uf_2gons); },
+             yerr: (d) => d.uf_2gons_err,
+         });
+
+         linePlot.addLine({
+             title: "All maps",
+             cls: 'allmaps',
+             x: (d) => { return d.N; },
+             y: (d) => { return delinearize(d.N, d.am_2gons); },
+             yerr: (d) => d.am_2gons_err,
+         });
+
+         d3.tsv("compare_degrees.tsv", row, function(data) {
+             linePlot.data(data);
+
+             const render = () => {
+                 const width = visualizationDiv.clientWidth;
+                 const height = visualizationDiv.clientHeight;
+
+                 linePlot
+                     .width(width)
+                     .height(height)
+
+                 svg
+                     .attr('width', width)
+                     .attr('height', height)
+                     .call(linePlot);
+             }
+
+             render();
+
+             window.addEventListener('resize', render);
+         });
+     };
+
+     main();
+
+    </script>

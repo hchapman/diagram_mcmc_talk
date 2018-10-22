@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<body>
+    <script src="//d3js.org/d3.v4.min.js"></script>
+    <script src="js/d3-legend.min.js"></script>
+    <script src="LinePlot.js"></script>
+    <link rel="stylesheet" type="text/css" href="LinePlotMini.css">
+    <link rel="stylesheet" type="text/css" href="wl_lines.css">
+
+    <div id="visualization"></div>
+    <script>
+
+     function delinearize(x, y) {
+         return y - (x+2)/6;
+     }
+
+     const linePlot = LinePlot();
+
+     const _viewPorts = [
+         [50, -3,   100,  0.2],
+         [0,  -13,   500, 0.2]
+     ];
+
+     // transitions for reveal.js fragments
+     var _transitions = _viewPorts.slice(0,-1).map(
+         (v,k) => {
+             return {
+                 transitionBackward: function() {
+                     linePlot.zoomTo(_viewPorts[k])
+                 },
+                 transitionForward: function() {
+                     linePlot.zoomTo(_viewPorts[k+1]);
+                 },
+                 index: k
+             };
+         });
+
+     function main() {
+         const visualization = d3.select('#visualization');
+         const visualizationDiv = visualization.node();
+         const svg = visualization.append('svg');
+
+         linePlot
+             .xValue(d => d.N)
+             .yValue(d => d.wl_2gons)
+             .viewPort(_viewPorts[0])
+             .hasLegend(false)
+             .margin({top: 15, right: 30, bottom: 60, left: 70})
+             .xAxisLabelOffset(50)
+             .yAxisLabelOffset(-50)
+             .xLabel("Number of Crossings")
+             .yLabel("Normalized Bigons");
+
+         const row = d => {
+             d.N = +d.N;
+             d.wl_2gons = +d.wl_2gons;
+             d.wl_2gons_err = +d.wl_2gons_err;
+
+             d.uf_2gons = +d.uf_2gons;
+             d.uf_2gons_err = +d.uf_2gons_err;
+
+             d.am_2gons = +d.am_2gons;
+             d.am_2gons_err = +d.am_2gons_err;
+             return d;
+         }
+
+         linePlot.addLine({
+             title: "Wang Landau",
+             cls: 'wang-landau',
+             x: (d) => { return d.N; },
+             y: (d) => { return delinearize(d.N, d.wl_2gons); },
+             yerr: (d) => d.wl_2gons_err,
+         });
+
+         linePlot.addLine({
+             title: "Uniform",
+             cls: 'uniform',
+             x: (d) => { return d.N; },
+             y: (d) => { return delinearize(d.N, d.uf_2gons); },
+             yerr: (d) => d.uf_2gons_err,
+         });
+
+         linePlot.addLine({
+             title: "All maps",
+             cls: 'allmaps',
+             x: (d) => { return d.N; },
+             y: (d) => { return delinearize(d.N, d.am_2gons); },
+             yerr: (d) => d.am_2gons_err,
+         });
+
+         d3.tsv("compare_degrees.tsv", row, function(data) {
+             linePlot.data(data);
+
+             const render = () => {
+                 const width = visualizationDiv.clientWidth;
+                 const height = visualizationDiv.clientHeight;
+
+                 linePlot
+                     .width(width)
+                     .height(height)
+
+                 svg
+                     .attr('width', width)
+                     .attr('height', height)
+                     .call(linePlot);
+             }
+
+             render();
+
+             window.addEventListener('resize', render);
+         });
+     };
+
+     main();
+
+    </script>

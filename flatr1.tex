@@ -1,0 +1,59 @@
+%%% Flat Reidemiester 1 moves, with arcs labeled as in original paper
+\documentclass{standalone}
+
+\usepackage{amsmath}
+\input{markov_header.tex}
+
+\usepackage{tikz}
+\usetikzlibrary{calc,decorations,arrows.meta,decorations.markings,decorations.pathmorphing,backgrounds,hobby,knots}
+
+\input{markov_tikz.tex}
+
+\begin{document}
+\begin{tikzpicture}
+  \begin{scope}[xshift=-1.25in]
+    \small
+    \node (x) at (0,0) {};
+    \node (e1) at (-1,-1) {};
+    \node (e2) at (1,-1) {};
+    \node (e3) at (0,1) {};
+
+    \draw[very thick,startarc={-1}{\arccolor}] (e1.center) .. controls +(60:.5) and +(180:.5) .. (x.center)
+    node [right,pos=0.2] {\contour{white}{\(a_2\)}};
+    \draw[very thick,endarc={1}{\rootcolor}]
+    (x.center) .. controls +(0:.5) and +(120:.5) .. (e2.center)
+    node [right,pos=0.8] {\contour{white}{\(a_1\)}};
+  \end{scope}
+
+  \begin{scope}[xshift=1.25in]
+    \small
+    \node (x) at (0,0) {};
+    \node (e1) at (-1,-1) {};
+    \node (e2) at (1,-1) {};
+    \node (e3) at (0,1) {};
+
+    \draw[very thick, fwdarcs={-1}{0.5}{\arccolor}{\arccolor}]
+    (e1.center) -- (x.center)
+    node [left,pos=0.8] {\contour{white}{\(a_3\)}}
+    node [right,pos=0.1] {\contour{white}{\(a_2\)}};
+
+    \draw[very thick, fwdarcs={-1}{0.5}{\arccolor}{\arccolor}]
+    (x.center) -- (e2.center)
+    node [left,pos=0.5] {\contour{white}{\(a_4\)}}
+    node [right,pos=0.7] {\contour{white}{\(a_1\)}};
+    
+    \draw[very thick,startarc={-1}{\arccolor}] (x.center) .. controls (.5,.5) and (.5,1) .. (e3.center)
+    node [right,pos=0.4] {\contour{white}{\(a_5\)}};
+    \draw[very thick,endarc={1}{\rootcolor}] (e3.center) .. controls (-.5,1) and (-.5,.5) .. (x.center)
+    node [right,pos=0.6] {\contour{white}{\(a_6\)}};
+
+    \draw[fill=black] (x) circle [radius=3pt];
+  \end{scope}
+
+  \draw[->] (-.6in,0.1) -- (.6in,0.1)
+  node [above,pos=0.5] {\(\RIp(M,a_1)\)};
+  \draw[->] (.6in,-0.1) -- (-.6in,-0.1)
+  node [below,pos=0.5] {\(\RIm(M',a_6)\)};
+  
+\end{tikzpicture}
+\end{document}

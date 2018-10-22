@@ -1,0 +1,220 @@
+<!doctype html>
+<html>
+	  <head>
+		    <meta charset="utf-8">
+		    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		    <title>A Markov chain sampler for knot diagrams</title>
+
+		    <link rel="stylesheet" href="css/reveal.css">
+		    <link rel="stylesheet" href="css/theme/mywhite.css">
+        <link rel="stylesheet" href="css/mathcros.css">
+
+		    <!-- Theme used for syntax highlighting of code -->
+		    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+		    <!-- Printing and PDF exports -->
+		    <script>
+			   var link = document.createElement( 'link' );
+			   link.rel = 'stylesheet';
+			   link.type = 'text/css';
+			   link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			   document.getElementsByTagName( 'head' )[0].appendChild( link );
+		    </script>
+	  </head>
+	  <body>
+		    <div class="reveal">
+			      <div class="slides">
+
+				        <section class="center">
+                    <h1>A Markov Chain Sampler<br>for Knot Diagrams</h1>
+
+                    <div style="display:inline-block; width:45%; margin-bottom:2em;">
+                        <span style="font-size: 100%;"><strong>Harrison Chapman</strong></span><br>
+                        <span style="font-size: 90%;"><strong>Colorado State University</strong></span>
+                    </div>
+                    <div style="display:inline-block; width:45%;margin-bottom:2em;">
+                        <span style="font-size: 100%;">Andrew Rechnitzer</span><br>
+                        <span style="font-size: 90%;">University of British Columbia</span></div>
+                    <p style="font-size:80%;">
+                        Special Section on Mathematical Methods for the Study<br>
+                        of the Three Dimensional Structure of Biopolymers
+                    </p>
+                    <p style="font-size:70%;">
+                        AMS 2018 Fall Western Sectional Meeting<br>
+                        SFSU, San Francisco CA<br>
+                        October 28<sup>th</sup> 2018
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Knot Diagrams</h2>
+                    <p><strong>Crossings</strong> are the primary components of knot diagram models</p>
+                    <img style="height: 450px" class="plain" data-src="random_100kd.svg">
+                </section>
+
+                <section>
+                    <h2>Crossings as Self-contacts</h2>
+                    <p>Crossings may be viewed as <strong>self-contacts</strong> where enzymes may act to change DNA topology</p>
+                    <p>
+                        <img style="height: 150px; margin-bottom:-.5em" class="plain" data-src="static_figs/strand_passage.svg"><br>
+                        Strand passage action, <em>e.g.</em> topo-IV
+                    </p>
+                    <p>
+                        <img style="height: 150px; margin-bottom:-.5em" class="plain" data-src="static_figs/coherent_smoothing.svg"><br>
+                        Coherent smoothing action, <em>e.g.</em> XerCD
+                    </p>
+                </section>
+
+                <section>
+                    <section>
+                        <h2>Uniform Random Sampling</h2>
+                        <h3>Direct sampling</h3>
+                        <p><strong>No known algorithms</strong> for <strong>directly sampling</strong> knot diagrams uniformly</p>
+                        <p>&nbsp;</p>
+                        <p>Related to <strong>lack of exact enumeration</strong> for knot diagrams</p>
+                    </section>
+                    <section>
+                        <h2>Uniform Random Sampling</h2>
+                        <h3>Rejection sampling</h3>
+                        <p>Sample link diagrams uniformly, but only accept knot diagrams</p>
+                        <p>&nbsp;</p>
+                        <p>Samples diagrams of <strong>specified size</strong> \(n\)</p>
+                        <p>Distribution is <strong>exactly uniform</strong> across a size \(n\)</p>
+                        <p>Knots are <strong>rare</strong> among links; most samples <strong>rejected</strong></p>
+                        <p>Knots of <strong>fixed type</strong> are themselves <strong>exponentially rare</strong> among all knots</p>
+                    </section>
+                    <section>
+                        <h2>Uniform Random Sampling</h2>
+                        <h3>Monte Carlo sampling</h3>
+                        <p>Sample states from Markov process that explores knot diagrams</p>
+                        <p>&nbsp;</p>
+                        <p>Samples diagrams of <strong>all possible sizes</strong></p>
+                        <p>Distribution limits on a uniform distribution and is <strong>approximately uniform</strong> across any given size</p>
+                        <p><strong>Only knot diagrams</strong> are sampled</p>
+                        <p>Extends to sampling diagrams <strong>of any fixed type</strong></p>
+                    </section>
+                </section>
+
+                <section>
+                    <h2>Diagram Markov Chain</h2>
+                    <p>One step of the <strong>diagram Markov chain</strong> takes as input a knot diagram, performs with some probability a <strong>Reidemeister transition</strong>, and returns the resulting knot diagram</p>
+                    <br>
+                    <p><strong>Ignore crossing signs:</strong> Explore all knot diagrams</p>
+                    <p><strong>Respect crossing signs:</strong> Explore all knot diagrams of <strong>fixed knot type</strong> <br>(<em>c.f.</em> BFACF and lattice polygons)</p>
+                </section>
+
+                <section>
+                    <h2>Reidemeister Transitions</h2>
+                    <img style="height: 126px" class="plain" data-src="static_figs/flatr1.svg">
+                    <img style="height: 126px" class="plain" data-src="static_figs/flatr2.svg">
+                    <img style="height: 195px" class="plain" data-src="static_figs/flatr3.svg">
+                </section>
+
+                <section>
+                    <h2>Ergodicity</h2>
+                    <p><strong>Acyclic</strong> as there is always a chance a transition fails</p>
+                    <p><strong>Positive recurrent</strong> as all valid transitions have nonzero probability and;</p>
+                    <x-theorem>
+                        <h2>Alexander-Briggs, Reidemeister 1927</h2>
+                        Any two knot diagrams of knot type \(K\) are related by a finite sequence of Reidemeister moves
+                    </x-theorem>
+                </section>
+
+                <section>
+                    <h2>Wang-Landau Transition Probabilities</h2>
+                    <p>Given <em>a priori</em> approximate enumeration data \(\{g_n\}\) so that \(g_n \approx k_n\), the number of \(n\)-crossing knot diagrams, for all \(n\):</p>
+                    <p><strong>Roughly,</strong> only perform transitions from \(n\)-crossing diagrams to \(m\) crossing diagrams with probability \(g_n/g_m\)</p>
+                    <br>
+                    <p>The approximate enumeration \(\{g_n\}\) can be calculated iteratively using the Markov process itself</p>
+                </section>
+
+				        <section>
+                    <h2>Stationary Distribution</h2>
+                    <x-theorem>
+                        <h2>C&ndash;Rechnitzer 2018</h2>
+                        This Markov chain has stationary distribution given by,
+                        \[ \pi(D) \propto \frac{1}{g_n} \approx \frac{1}{k_n}. \]
+                        Knot diagrams are sampled <strong>uniformly for any given size</strong>, and approximately <strong>each size is equally likely</strong>.
+                    </x-theorem>
+                </section>
+
+                <section style="text-align:center;">
+                    <h2>A Random Walk Through Diagrams</h2>
+                    <div class="fig-container" style="width: 500px; display: inline-block;"
+                         data-file="fig_gaussmovie.html"></div>
+                </section>
+
+                <section>
+                    <h2>Sample Size Histogram</h2>
+
+                </section>
+
+                <section>
+                    <h2>Statistics and Comparisons</h2>
+                </section>
+
+                <section>
+                    <h2>Monogons in Shadows</h2>
+                    <div class="fig-container" style="height: 600px; width:100%; display: inline-block;" data-style="width:100%; height:100%;"
+                         data-file="fig_1gons.html"></div>
+                </section>
+
+                <section>
+                    <h2>1&ndash;4-gons in Shadows</h2>
+                    <div class="fig-container"
+                         style="width: 45%; height: 270px; display: inline-block;"
+                         data-style="width:100%; height:100%;"
+                         data-file="fig_1gons_mini.html"></div>
+                    <div class="fig-container"
+                         style="width: 45%; height: 270px; display: inline-block;"
+                         data-style="width:100%; height:100%;"
+                         data-file="fig_2gons_mini.html"></div>
+                    <div class="fig-container"
+                         style="width: 45%; height: 270px; display: inline-block;"
+                         data-style="width:100%; height:100%;"
+                         data-file="fig_3gons_mini.html"></div>
+                    <div class="fig-container"
+                         style="width: 45%; height: 270px; display: inline-block;"
+                         data-style="width:100%; height:100%;"
+                         data-file="fig_4gons_mini.html"></div>
+                </section>
+
+                <section>
+                    <h2>Average \(v_2\) Vassiliev Invariant</h2>
+                </section>
+
+                <section class="center">
+                    <h2>Thank you!</h2>
+                </section>
+			      </div>
+		    </div>
+
+		    <script src="lib/js/head.min.js"></script>
+		    <script src="js/reveal.js"></script>
+
+		    <script>
+			   // More info about config & dependencies:
+			          // - https://github.com/hakimel/reveal.js#configuration
+			   // - https://github.com/hakimel/reveal.js#dependencies
+			   Reveal.initialize({
+             center: false,
+             transition: "slide",
+             viewDistance: 3,
+             history: true,
+             reveald3: {
+                 runLastState: false
+             },
+				     dependencies: [
+					       { src: 'plugin/markdown/marked.js' },
+					       { src: 'plugin/markdown/markdown.js' },
+					       { src: 'plugin/notes/notes.js', async: true },
+					       { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+                 { src: 'plugin/math/math.js', async:true },
+                 { src: 'plugin/reveald3/reveald3.js' }
+
+				     ]
+			   });
+		    </script>
+	  </body>
+</html>

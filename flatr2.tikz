@@ -1,0 +1,68 @@
+%%% Flat Reidemiester 2 moves, with arcs labeled as in original paper
+
+\documentclass{standalone}
+
+\usepackage{tikz}
+\usetikzlibrary{decorations.markings,backgrounds,hobby,knots}
+
+\tikzset{->-/.style={decoration={ markings, mark=at position #1
+      with {\arrow{>}}},postaction={decorate}}}
+
+\begin{document}
+\begin{tikzpicture}
+  \begin{scope}[xshift=-1.25in]
+    \small
+    \node (x) at (0,-0.3) {};
+    \node (y) at (0,0.3) {};
+    \node (e1) at (-1,-1) {};
+    \node (e2) at (1,-1) {};
+    \node (e3) at (1,1) {};
+    \node (e4) at (-1,1) {};
+
+    \draw[very thick] (e1.center) .. controls +(60:.4) and +(180:.4) .. (x.center)
+    node [right,pos=0.2] {\(a_2\)};
+    \draw[very thick] (x.center) .. controls +(0:.4) and +(120:.4) .. (e2.center)
+    node [right,pos=0.8] {\(a_1\)};
+
+    \draw[very thick] (e3.center) .. controls +(-120:.4) and +(0:.4) .. (y.center)
+    node [left,pos=0.2] {\(a_4\)};
+    \draw[very thick] (y.center) .. controls +(180:.4) and +(-60:.4) .. (e4.center)
+    node [left,pos=0.8] {\(a_3\)};
+  \end{scope}
+
+  \begin{scope}[xshift=1.53in]
+    \small
+    \node (x) at (-1,0) {};
+    \node (y) at (1,0) {};
+    \node (e1) at (-1.5,-1) {};
+    \node (e2) at (1.5,-1) {};
+    \node (e3) at (1.5,1) {};
+    \node (e4) at (-1.5,1) {};
+
+    \draw[very thick] (e1.center) -- (x.center)
+    node [right,pos=0.1] {\(a_2\)}
+    node [left,pos=0.7] {\(a_9\)}
+    .. controls +(60:1) and +(120:1) .. (y.center)
+    node [right,pos=0.1] {\(a_6\)}
+    node [above,pos=0.8] {\(a_5\)}
+    -- (e2.center)
+    node [left,pos=0.7] {\(a_{12}\)}
+    node [right,pos=0.9] {\(a_1\)};
+
+    \draw[very thick] (e3.center) -- (y.center)
+    node [left,pos=0.1] {\(a_4\)}
+    node [right,pos=0.7] {\(a_{11}\)}
+    .. controls +(-120:1) and +(-60:1) .. (x.center)
+    node [left,pos=0.1] {\(a_8\)}
+    node [below,pos=0.8] {\(a_7\)}
+    -- (e4.center)
+    node [right,pos=0.7] {\(a_{10}\)}
+    node [left,pos=0.9] {\(a_3\)};
+  \end{scope}
+
+  \draw[->] (-.6in,0.1) -- (.6in,0.1)
+  node [above,pos=0.5] {\(\RIIp(M,a_1,a_3)\)};
+  \draw[->] (.6in,-0.1) -- (-.6in,-0.1)
+  node [below,pos=0.5] {\(\RIIm(M',a_6)\)};
+\end{tikzpicture}
+\end{document}

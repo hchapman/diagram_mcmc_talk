@@ -1,0 +1,15 @@
+.circle-edge {
+    stroke-width:1; fill:none;
+}
+
+.edge-positive {
+    stroke: red;
+}
+
+.edge-negative {
+    stroke: blue;
+}
+
+.edge-new {
+    stroke-width:2;
+}

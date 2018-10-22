@@ -1,0 +1,20 @@
+.path-data.wang-landau {
+    stroke: steelblue;
+}
+.swatch.wang-landau, .area.wang-landau {
+    fill: steelblue;
+}
+
+.path-data.uniform {
+    stroke: orange;
+}
+.swatch.uniform, .area.uniform {
+    fill: orange;
+}
+
+.path-data.allmaps {
+    stroke: green;
+}
+.swatch.allmaps, .area.allmaps {
+    fill: green;
+}

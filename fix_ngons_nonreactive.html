@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+ body {
+     font-size: 26px;
+     font-family: 'Source Sans Pro', Helvetica, sans-serif;
+     text-align: center;
+ }
+
+ .axis path,
+ .axis line {
+     fill: none;
+     stroke: #000;
+     shape-rendering: crispEdges;
+ }
+
+ .error-line {
+     stroke: #000;
+ }
+
+ .point {
+     fill: steelblue;
+     stroke: #000;
+ }
+
+ .area {
+     opacity: .2;
+ }
+
+
+ .am-point {
+     fill: steelblue;
+     stroke: #000;
+ }
+
+</style>
+<body>
+    <script src="//d3js.org/d3.v4.min.js"></script>
+    <script>
+
+
+     var _transitions = [
+         {
+             transitionBackward: function() {
+                 zoomTo(xRange[0], yRange[0], xRange[1], yRange[1])
+             },
+             transitionForward: function() {
+                 zoomTo(50, 0, 95, 2.0);
+             },
+             index: 0
+         },
+         {
+             transitionBackward: function() {
+                 zoomTo(50, 0, 95, 2.0);
+             },
+             transitionForward: function() {
+                 zoomTo(84, 1.7, 96, 2);
+             },
+             index: 1
+         },
+     ];
+
+     function delinearize(x, y) {
+         return y - (x+2)/3;
+     }
+
+     var margin = {top: 10, right: 30, bottom: 80, left: 100},
+         width = 960 - margin.left - margin.right,
+         height = 700 - margin.top - margin.bottom;
+
+     var xScale = d3.scaleLinear()
+                    .range([0, width]);
+
+     var yScale = d3.scaleLinear()
+                    .range([height, 0]);
+
+     var xAxis = d3.axisBottom(xScale);
+     var yAxis = d3.axisLeft(yScale).tickArguments([5]);
+
+     var xRange = [0, 500];
+     var yRange = [0, 10];
+
+     var gX;
+     var gY;
+
+     var svg = d3.select("body").append("svg")
+                 .attr("width", width + margin.left + margin.right)
+                 .attr("height", height + margin.top + margin.bottom)
+                 .append("g")
+                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+     // Add the x-axis.
+     gX = svg.append("g")
+             .attr("transform", function() { return "translate(" + 0 + "," + height + ")" })
+             .call(xAxis)
+             .attr("font-family", "'Source Sans Pro', Helvetica, sans-serif")
+             .attr("font-size", "25px");
+
+     // Add the y-axis.
+     gY = svg.append("g")
+             .call(yAxis)
+             .attr("font-family", "'Source Sans Pro', Helvetica, sans-serif")
+             .attr("font-size", "25px");
+
+     svg.append("clipPath")
+        .attr("id", "clip")
+        .append("rect")
+        .attr("width", width)
+        .attr("height", height)
+
+     var chart = svg.append("g")
+                    .attr("clip-path", "url(#clip)");
+
+     // Y axis label
+     svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x", 0 - (height/2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Normalized monogon counts")
+
+     // X axis label
+     svg.append("text")
+        .attr("y", height+margin.bottom/2)
+        .attr("x", width/2)
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Number of crossings")
+
+     // Chart title
+     /* d3.select("body").select("svg").append("text")
+      *    .attr("y", 0)
+      *    .attr("x", margin.left+(width)/2)
+      *    .attr("dy", "1em")
+      * .attr("font-size", "150%")
+      * .style("text-anchor", "middle")
+      *    .text("Monogons in random shadows");
+      */
+
+     function zoomTo(x0, y0, x1, y1) {
+         tx0 = xScale.domain()[0];
+         ty0 = 10;//yRange[1];
+         xScale.domain([x0, x1]);
+         yScale.domain([y0, y1]);
+         var t = svg.transition().duration(750);
+         gX.transition(t).call(xAxis);
+         gY.transition(t).call(yAxis);
+         ky = (yRange[1] - yRange[0])/(y1 - y0);
+         kx = (xRange[1] - xRange[0])/(x1 - x0);
+         tx = xScale(0)/kx;
+         ty = yScale(ty0)/ky;
+
+         d3.selectAll(".chart-zoom").transition(t)
+           .attr("transform", "scale("+kx+","+ky+")translate("+tx+","+ty+")");
+         chart.selectAll("circle").transition(t)
+              .attr("cx", function(d) { return xScale(d.x); })
+              .attr("cy", function(d) { return yScale(d.y); });
+         chart.selectAll(".error-line").transition(t)
+              .attr("x1", (d) => xScale(d.x))
+              .attr("x2", (d) => xScale(d.x))
+              .attr("y1", (d) => yScale(d.y - d.y_err))
+              .attr("y2", (d) => yScale(d.y + d.y_err));
+
+         //.attr("transform", "scale("+kx+", "+ky+")translate("+tx+", "+ty+")");
+     }
+
+     d3.tsv("compare_degrees.tsv", function(error, data) {
+         if (error) throw error;
+
+         // Coerce the data to numbers.
+         data.forEach(function(d) {
+             d.x = +d.N;
+             d.y_raw = +d.wl_1gons;
+             d.y_err = +d.wl_1gons_err;
+             d.y = delinearize(d.x, d.y_raw);
+         });
+
+         // Compute the scales’ domains.
+         xScale.domain(d3.extent(data, function(d) { return d.x; })).nice();
+         xRange = xScale.domain();
+         yScale.domain(d3.extent(data, function(d) { return d.y; })).nice();
+         yRange = yScale.domain();
+
+         gX.call(xAxis)
+         gY.call(yAxis)
+
+         errorlines = d3.area()
+                        .x(d => xScale(d.x))
+                        .y0(d => yScale(d.y - d.y_err))
+                        .y1(d => yScale(d.y + d.y_err));
+
+         chart.append("path")
+              .datum(data)
+              .attr("class", "chart-zoom")
+              .attr("class", "chart-zoom area")
+              .attr("fill", "steelblue")
+              .attr("d", errorlines);
+
+         // Add the points!
+         chart.append("path")
+              .datum(data)
+              .attr("class", "chart-zoom")
+              .attr("fill", "none")
+              .attr("stroke", "steelblue")
+              .attr("vector-effect", "non-scaling-stroke")
+              .attr("stroke-linejoin", "round")
+              .attr("stroke-linecap", "round")
+              .attr("stroke-width", 1.5)
+              .attr("d", d3.line()
+                           .x(function(d) { return xScale(d.x); })
+                           .y(function(d) { return yScale(d.y); }));
+
+         /* chart.selectAll("circle")
+          *      .data(data.filter((d) => d.N % 5 == 0))
+          *      .enter()
+          *      .append("circle")
+          *      .attr("cx", function(d) { return xScale(d.x); })
+          *      .attr("cy", function(d) { return yScale(d.y); })
+          *      .attr("r", 3);
+
+          * chart.selectAll("line")
+          *      .data(data.filter((d) => d.N % 5 == 0))
+          *      .enter()
+          *      .append("line")
+          *      .attr("class", "error-line")
+          *      .attr("x1", (d) => xScale(d.x))
+          *      .attr("y1", (d) => yScale(d.y - d.y_err))
+          *      .attr("x2", (d) => xScale(d.x))
+          *      .attr("y2", (d) => yScale(d.y + d.y_err));
+          */
+
+     });
+
+     d3.tsv("compare_degrees.tsv", function(error, data) {
+         if (error) throw error;
+
+         // Coerce the data to numbers.
+         data.forEach(function(d) {
+             d.x = +d.N;
+             d.y_raw = +d.am_1gons;
+             d.y = delinearize(d.x, d.y_raw);
+             d.y_err = +d.am_1gons_err;
+         });
+
+         data = data.filter(d => !isNaN(d.y));
+         errorlines = d3.area()
+                        .x(d => xScale(d.x))
+                        .y0(d => yScale(d.y - d.y_err))
+                        .y1(d => yScale(d.y + d.y_err));
+
+         chart.append("path")
+              .datum(data)
+              .attr("class", "chart-zoom")
+              .attr("class", "chart-zoom area")
+              .attr("fill", "orange")
+              .attr("d", errorlines);
+         // Add the points!
+         chart.append("path")
+              .datum(data)
+              .attr("class", "chart-zoom")
+              .attr("fill", "none")
+              .attr("stroke", "orange")
+              .attr("vector-effect", "non-scaling-stroke")
+              .attr("stroke-linejoin", "round")
+              .attr("stroke-linecap", "round")
+              .attr("stroke-width", 1.5)
+              .attr("clip-path", "url(#clip)")
+              .attr("d", d3.line()
+                           .x(function(d) { return xScale(d.x); })
+                           .y(function(d) { return yScale(d.y); }));
+
+
+     });
+
+     d3.tsv("compare_degrees.tsv", function(error, data) {
+         if (error) throw error;
+
+         // Coerce the data to numbers.
+         data.forEach(function(d) {
+             d.x = +d.N;
+             d.y_raw = +d.uf_1gons;
+             d.y = delinearize(d.x, d.y_raw);
+             d.y_err = +d.uf_1gons_err;
+         });
+
+         data = data.filter(d => !isNaN(d.y));
+         errorlines = d3.area()
+                        .x(d => xScale(d.x))
+                        .y0(d => yScale(d.y - d.y_err))
+                        .y1(d => yScale(d.y + d.y_err));
+
+         chart.append("path")
+              .datum(data)
+              .attr("class", "chart-zoom")
+              .attr("class", "chart-zoom area")
+              .attr("fill", "green")
+              .attr("d", errorlines);
+         // Add the points!
+         chart.append("path")
+              .datum(data)
+              .attr("class", "chart-zoom")
+              .attr("fill", "none")
+              .attr("stroke", "green")
+              .attr("vector-effect", "non-scaling-stroke")
+              .attr("stroke-linejoin", "round")
+              .attr("stroke-linecap", "round")
+              .attr("stroke-width", 1.5)
+              .attr("clip-path", "url(#clip)")
+              .attr("d", d3.line()
+                           .x(function(d) { return xScale(d.x); })
+                           .y(function(d) { return yScale(d.y); }));
+
+
+     });
+
+    </script>

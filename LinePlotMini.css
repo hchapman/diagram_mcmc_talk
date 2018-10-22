@@ -1,0 +1,59 @@
+
+ body {
+     font-size: 26px;
+     font-family: 'Source Sans Pro', Helvetica, sans-serif;
+     text-align: center;
+ }
+
+ .axis path,
+ .axis line {
+     fill: none;
+     stroke: #000;
+     shape-rendering: crispEdges;
+ }
+
+ .error-line {
+     stroke: #000;
+ }
+
+ .point {
+     fill: steelblue;
+     stroke: #000;
+ }
+
+ .area {
+     opacity: .2;
+ }
+
+ .path-data {
+     stroke-width: 2px;
+     vector-effect: non-scaling-stroke;
+ }
+
+ .am-point {
+     fill: steelblue;
+     stroke: #000;
+ }
+
+ .tick line {
+     stroke: #C0C0BB;
+ }
+ .tick text, .legendCells text {
+     fill: #8E8883;
+     font-size: 15pt;
+     font-family: 'Source Sans Pro', Helvetica, sans-serif;
+ }
+
+ .axis-label, .legend-label {
+     fill: #635F5D;
+     font-size: 18pt;
+     font-family: 'Source Sans Pro', Helvetica, sans-serif;
+ }
+
+ #visualization {
+     position: fixed;
+     left: 0px;
+     right: 0px;
+     top: 0px;
+     bottom: 0px;
+ }
