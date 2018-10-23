@@ -21,29 +21,32 @@
          let yRawDomain;
 
          let lines = [];
-         let g;
+         let g, plotG;
 
          let xAxisG;
          let yAxisG;
 
          let hasLegend = true;
 
+         let innerWidth, innerHeight;
+
          function to_filtered_linedata(l, data) {
              return d3.line()
-                      .x(d => xScale(l.x(d)))
-                      .y(d => yScale(l.y(d)))(data.filter(d => !isNaN(l.y(d))))
+                 .x(d => l.x(d))
+                 .y(d => l.y(d))(data.filter(d => !isNaN(l.y(d))));
          };
 
          function to_filtered_areaerror(l, data) {
-             return d3.area()
-                      .x(d => xScale(l.x(d)))
-                      .y0(d => yScale(l.y(d) - l.yerr(d)))
-                      .y1(d => yScale(l.y(d) + l.yerr(d)))(data.filter(d => !isNaN(l.y(d))));
+             return (d3.area()
+                     .x(d => l.x(d))
+                     .y0(d => l.y(d) - l.yerr(d))
+                     .y1(d => l.y(d) + l.yerr(d))
+                    )(data.filter(d => !isNaN(l.y(d))));
          };
 
          const my = selection => {
-             const innerWidth = width - margin.left - margin.right;
-             const innerHeight = height - margin.top - margin.bottom;
+             innerWidth = width - margin.left - margin.right;
+             innerHeight = height - margin.top - margin.bottom;
 
              g = selection.selectAll('.container').data([null]);
              const gEnter = g.enter().append('g').attr('class', 'container');
@@ -91,13 +94,23 @@
              xAxisG.call(xAxis);
              yAxisG.call(yAxis);
 
-             g.append("clipPath")
+             var viewX = xRawDomain[0];
+             var viewY = yRawDomain[0];
+             var viewW = xRawDomain[1]-xRawDomain[0];
+             var viewH = yRawDomain[1]-yRawDomain[0];
+
+             plotG = g.append("g");
+             plotG.attr("transform", `matrix(${innerWidth/viewW} 0 0 ${-innerHeight/viewH} ${-innerWidth*viewX/viewW} ${innerHeight*(viewH+viewY)/viewH})`);
+
+             plotG.append("clipPath")
                  .attr("id", "clip")
                  .append("rect")
-                 .attr("width", innerWidth)
-                 .attr("height", innerHeight);
+                 .attr("x", viewX)
+                 .attr("y", viewY)
+                 .attr("width", viewW)
+                 .attr("height", viewH);
 
-             const errors = g.selectAll('.path-error').data(lines);
+             const errors = plotG.selectAll('.path-error').data(lines);
              errors
                  .enter()
                  .append("path")
@@ -106,10 +119,10 @@
                  .classed("path-error", true)
                  .attr("clip-path", "url(#clip)");
 
-             g.selectAll('.path-error')
+             plotG.selectAll('.path-error')
               .attr("d", l => to_filtered_areaerror(l, data));
 
-             const paths = g.selectAll('.path-data').data(lines);
+             const paths = plotG.selectAll('.path-data').data(lines);
              paths
                  .enter()
                  .append('path')
@@ -118,7 +131,7 @@
                  .classed('path-data', true)
                  .classed('chart-zoom', true)
                  .attr("clip-path", "url(#clip)");
-             g.selectAll('.path-data')
+             plotG.selectAll('.path-data')
               .attr('d', l => to_filtered_linedata(l, data));
 
              var ordinal = d3.scaleOrdinal()
@@ -129,7 +142,7 @@
                  let legend = d3.legendColor()
                      .useClass(true)
                      .scale(ordinal);
-                 
+
                  g.append("g")
                      .attr("class", "legend")
                      .attr("transform", "translate(20,20)");
@@ -243,18 +256,26 @@
              xRawDomain = [x0, x1];
              yRawDomain = [y0, y1];
 
+             var viewX = xRawDomain[0];
+             var viewY = yRawDomain[0];
+             var viewW = xRawDomain[1]-xRawDomain[0];
+             var viewH = yRawDomain[1]-yRawDomain[0];
+
+
              xScale.domain(xRawDomain);
              yScale.domain(yRawDomain);
              var t = g.transition().duration(750);
              xAxisG.transition(t).call(xAxis);
              yAxisG.transition(t).call(yAxis);
 
-             g.selectAll('.path-error').transition(t)
-              .attr("d", l => to_filtered_areaerror(l, data));
+             plotG.selectAll("clipPath rect").transition(t)
+                 .attr("x", viewX)
+                 .attr("y", viewY)
+                 .attr("width", viewW)
+                 .attr("height", viewH);
 
-             d3.selectAll(".path-data").transition(t)
-               .attr('d', l => to_filtered_linedata(l, data));
-
+             plotG.transition(t)
+             .attr("transform", `matrix(${innerWidth/viewW} 0 0 ${-innerHeight/viewH} ${-innerWidth*viewX/viewW} ${innerHeight*(viewH+viewY)/viewH})`);
          };
 
          return my;
