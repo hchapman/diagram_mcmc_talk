@@ -54,6 +54,28 @@
                 </section>
 
                 <section>
+                    <h2>Knot Diagrams and Knot Shadows</h2>
+                    <x-block>
+                        <h2>4-valent Maps</h2>
+                        A <strong>4-valent map</strong> is a 4-valent graph embedded in the sphere
+                    </x-block>
+                    <x-block>
+                        <h2>Knot Shadows</h2>
+                        A <strong>knot shadow</strong> or plane curve is a 4-valent map with one link component, and vertices viewed as <strong>crossings</strong>
+                    </x-block>
+                    <x-block>
+                        <h2>Knot Diagrams</h2>
+                        A <strong>knot diagram</strong> is a knot shadow with crossing signs indicating depth
+                    </x-block>
+                </section>
+
+                <section>
+                    <h2>Knot Diagrams and Link Diagrams</h2>
+                    <img style="height: 400px; margin-right:40px" class="plain" data-src="random_100kd.svg">
+                    <img style="height: 400px" class="plain" data-src="random_100ld.svg">
+                </section>
+
+                <section>
                     <h2>Crossings as Self-contacts</h2>
                     <p>Crossings may be viewed as <strong>self-contacts</strong> where enzymes may act to change DNA topology</p>
                     <p>
@@ -62,7 +84,7 @@
                     </p>
                     <p>
                         <img style="height: 150px; margin-bottom:-.5em" class="plain" data-src="static_figs/coherent_smoothing.svg"><br>
-                        Coherent smoothing action, <em>e.g.</em> XerCD
+                        Coherent smoothing action, <em>e.g.</em> XerCD-<em>dif</em>-FtsK complex
                     </p>
                 </section>
 
@@ -72,36 +94,46 @@
                         <h3>Direct sampling</h3>
                         <p><strong>No known algorithms</strong> for <strong>directly sampling</strong> knot diagrams uniformly</p>
                         <p>&nbsp;</p>
-                        <p>Related to <strong>lack of exact enumeration</strong> for knot diagrams</p>
+                        <p>Related to <strong>lack of exact enumeration</strong> \(\{k_n\}\) for knot diagrams
+                            \[ k_n \sim C\mu^n n^{\gamma-2}(1 + O(1/\log n)) \quad \text{(conj.)} \]
+                        </p>
                     </section>
                     <section>
                         <h2>Uniform Random Sampling</h2>
                         <h3>Rejection sampling</h3>
-                        <p>Sample link diagrams uniformly, but only accept knot diagrams</p>
+                        <p>Sample 4-valent maps uniformly, but only accept knot diagrams</p>
                         <p>&nbsp;</p>
-                        <p>Samples diagrams of <strong>specified size</strong> \(n\)</p>
-                        <p>Distribution is <strong>exactly uniform</strong> across a size \(n\)</p>
-                        <p>Knots are <strong>rare</strong> among links; most samples <strong>rejected</strong></p>
-                        <p>Knots of <strong>fixed type</strong> are themselves <strong>exponentially rare</strong> among all knots</p>
+                        <ul class="width-80 relaxed">
+                        <li>Samples diagrams of <strong>specified size</strong> \(n\)</li>
+                        <li>Distribution is <strong>exactly uniform</strong> across a size \(n\)</li>
+                        <li>Knots are <strong>rare</strong>; most samples <strong>rejected</strong></li>
+                        <li>Knots of <strong>fixed type</strong> are <strong>exponentially rare</strong> among all knots</li>
+                        </ul>
                     </section>
                     <section>
                         <h2>Uniform Random Sampling</h2>
-                        <h3>Monte Carlo sampling</h3>
+                        <h3>Monte Carlo (MCMC) sampling</h3>
                         <p>Sample states from Markov process that explores knot diagrams</p>
                         <p>&nbsp;</p>
-                        <p>Samples diagrams of <strong>all possible sizes</strong></p>
-                        <p>Distribution limits on a uniform distribution and is <strong>approximately uniform</strong> across any given size</p>
-                        <p><strong>Only knot diagrams</strong> are sampled</p>
-                        <p>Extends to sampling diagrams <strong>of any fixed type</strong></p>
+                        <ul class="width-80 relaxed">
+                        <li>Samples diagrams of <strong>all possible sizes</strong></li>
+                        <li>Stationary distribution <strong>approximately uniform</strong> across any given size</li>
+                        <li><strong>Only knot diagrams</strong> are sampled</li>
+                        <li>Extends to sampling diagrams <strong>of any fixed type</strong></li>
+                        </ul>
                     </section>
                 </section>
 
                 <section>
-                    <h2>Diagram Markov Chain</h2>
-                    <p>One step of the <strong>diagram Markov chain</strong> takes as input a knot diagram, performs with some probability a <strong>Reidemeister transition</strong>, and returns the resulting knot diagram</p>
-                    <br>
-                    <p><strong>Ignore crossing signs:</strong> Explore all knot diagrams</p>
-                    <p><strong>Respect crossing signs:</strong> Explore all knot diagrams of <strong>fixed knot type</strong> <br>(<em>c.f.</em> BFACF and lattice polygons)</p>
+                    <h2>Diagram Markov Chains</h2>
+                    <p>One step of a <strong>diagram Markov chain</strong> takes as input a knot diagram, performs with some probability a <strong>Reidemeister transition</strong>, and returns the resulting knot diagram</p>
+                    
+                    <x-block><h2>Shadow Markov Chain</h2>
+                        Explore all knot shadows by <strong>ignoring crossing signs</strong>; get all knot diagrams by adding crossing information
+                    </x-block>
+                    <x-block>
+                        <h2>Fixed Knot Type Markov Chain</h2>
+                        Explore all diagrams of <strong>fixed knot type</strong> by <strong>respecting crossing signs</strong> (<em>c.f.</em> BFACF and lattice polygons)</p>
                 </section>
 
                 <section>
@@ -113,51 +145,127 @@
 
                 <section>
                     <h2>Ergodicity</h2>
-                    <p><strong>Acyclic</strong> as there is always a chance a transition fails</p>
-                    <p><strong>Positive recurrent</strong> as all valid transitions have nonzero probability and;</p>
+                    <p><strong>Aperiodic</strong> as there is always a chance a transition fails</p>
+                    <p><strong>Connected</strong> as all valid transitions have nonzero probability and;</p>
                     <x-theorem>
                         <h2>Alexander-Briggs, Reidemeister 1927</h2>
                         Any two knot diagrams of knot type \(K\) are related by a finite sequence of Reidemeister moves
                     </x-theorem>
+                    <p>We weight transition probabilities to enforce <strong>detailed balance</strong>, that
+                    \[ P(D \to N) \pi(D) = P(N \to D)\pi(N) \] </p>
+                    <p>So the Markov chain is <strong>ergodic</strong></p>
                 </section>
 
                 <section>
-                    <h2>Wang-Landau Transition Probabilities</h2>
-                    <p>Given <em>a priori</em> approximate enumeration data \(\{g_n\}\) so that \(g_n \approx k_n\), the number of \(n\)-crossing knot diagrams, for all \(n\):</p>
-                    <p><strong>Roughly,</strong> only perform transitions from \(n\)-crossing diagrams to \(m\) crossing diagrams with probability \(g_n/g_m\)</p>
-                    <br>
-                    <p>The approximate enumeration \(\{g_n\}\) can be calculated iteratively using the Markov process itself</p>
+                    <section>
+                        <h2>Wang-Landau Transition Probabilities</h2>
+                        <x-block>
+                            <h2>Problem</h2>
+                            MCMC sampling samples diagrams of arbitrary size, rather than some fixed \(n\)
+                        </x-block>
+                        <x-block>
+                            <h2>Solution</h2>
+                            Choose transition probabilities to enforce distribution on sizes sampled
+                        </x-block>
+                    </section>
+                    <section>
+                        <h2>Wang-Landau Transition Probabilities</h2>
+                        <p>Given <em>a priori</em> approximate enumeration data \(\{g_n\}\) so that \(g_n \approx k_n\):</p>
+                        <p>Only perform transitions from \(n\)-crossing diagrams to \(m\) crossing diagrams with probability \(g_n/g_m\)</p>
+                        <br>
+                        <p>The approximate enumeration \(\{g_n\}\) can be calculated iteratively using the Markov process itself</p>
+                    </section>
                 </section>
 
 				        <section>
                     <h2>Stationary Distribution</h2>
                     <x-theorem>
                         <h2>C&ndash;Rechnitzer 2018</h2>
-                        This Markov chain has stationary distribution given by,
+                        This Markov chain has stationary distribution where the probability that an \(n\)-crossing diagram \(D\) is sampled is,
                         \[ \pi(D) \propto \frac{1}{g_n} \approx \frac{1}{k_n}. \]
-                        Knot diagrams are sampled <strong>uniformly for any given size</strong>, and approximately <strong>each size is equally likely</strong>.
                     </x-theorem>
+                    <p>Knot diagrams are sampled</p>
+                    <ul>
+                        <li><strong>uniformly for any given size</strong>, and</li>
+                        <li>approximately <strong>each size is equally likely</strong></li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Shadow Markov Chain</h2>
+                    <p>Shadow Markov chan is nicer than fixed knot type Markov chain;</p>
+                    <x-theorem>
+                        <h2>Hass-Scott '94, de Graaf-Schrijver '97</h2>
+                        There exist paths connecting two shadows \(C\) and \(D\) only involving states with \(\le \max(|C|,|D|)\) crossings
+                    </x-theorem>
+                    <p>The shadow Markov chain is connected with maximum size limit</p>
+                    <p>Explore statistics for knot shadows and convergence of distribution</p>
                 </section>
 
                 <section style="text-align:center;">
-                    <h2>A Random Walk Through Diagrams</h2>
+                    <h2>A Random Walk Through Shadows</h2>
+                    <p>Gauss diagram animation for 10000 attempted transition steps</p>
                     <div class="fig-container" style="width: 500px; display: inline-block;"
                          data-file="fig_gaussmovie.html"></div>
                 </section>
 
                 <section>
                     <h2>Sample Size Histogram</h2>
-
+                    <div class="fig-container" style="height: 600px; width:100%; display: inline-block;" data-style="width:100%; height:100%;"
+                         data-file="fig_samplehist.html"></div>
                 </section>
 
                 <section>
                     <h2>Statistics and Comparisons</h2>
+                    <p>Check distribution validity by comparing statistics:</p>
+                    <x-block><h2>Face degrees</h2>
+                        Compare MCMC face degree statistics to rejection-sampled knot shadows and all 4-valent maps
+                    </x-block>
+                    <x-block><h2>Average \(v_2\) invariant</h2>
+                        Compare MCMC average Casson invariant statistics to rejection-sampled knot shadows
+                </section>
+
+                <section>
+                    <h2>Monogons in Shadows</h2>
+                    <p>In limit, \(\frac 13\) of faces in 4-valent maps are monogons</p>
+                    <p>Find that both samples of <strong>knot shadows</strong> have similar counts of monogons, both different from <strong>all maps</strong></p>
+                    <p>Normalize statistics: Subtract off limit linear behavior for all maps</p>
                 </section>
 
                 <section>
                     <h2>Monogons in Shadows</h2>
                     <div class="fig-container" style="height: 600px; width:100%; display: inline-block;" data-style="width:100%; height:100%;"
                          data-file="fig_1gons.html"></div>
+                </section>
+
+                <section>
+                    <h2>Other faces in Shadows</h2>
+                    <p>Similar to monogons, we get linear behavior for all other face degrees</p>
+                    <p>Both knot shadow samplers yield similar counts</p>
+                    <p>Normalize statistics: Subtract off limit \(y = n p_{k}\) behavior of all maps</p>
+                    <table class="center-table">
+                        <thead>
+                            <th align="center">\(n\)</th><th align="center">4-valent \(p_k\)</th>
+                            <th align="center">MCMC \(p_k\)</th>
+                        </thead>
+                        <tr><td align="center">1</td>
+                            <td align="center">\(\tfrac 13 = 0.\overline{3}\)</td>
+                            <td align="center">\(0.35036 \pm 4(10^{-5})\)</td>
+                        </tr>
+                        <tr><td align="center">2</td>
+                            <td align="center">\(\tfrac 16 = 0.1\overline{6}\)</td>
+                            <td align="center">\(0.14056 \pm 3(10^{-5})\)</td>
+                        </tr>
+                        <tr><td align="center">3</td>
+                            <td align="center">\(\tfrac {13}{108} = 0.12\overline{037}\)</td>
+                            <td align="center">\(0.12257 \pm 3(10^{-5})\)</td>
+                        </tr>
+                        <tr><td align="center">4</td>
+                            <td align="center">\(\tfrac {55}{648} \approx 0.08488\)</td>
+                            <td align="center">\(0.08298 \pm 2(10^{-5})\)</td>
+                        </tr>
+                    </table>
+                    <p>2-gons and 4-gons are <strong>more rare</strong> in knot shadows; all other faces are more common</p>
                 </section>
 
                 <section>
@@ -182,10 +290,50 @@
 
                 <section>
                     <h2>Average \(v_2\) Vassiliev Invariant</h2>
+                    <p>The <strong>average \(v_2\) invariant</strong> over all crossing assignments of a plane curve is a spherical curve invariant</p>
+                    <x-block>
+                        <h2>Conjecture</h2>
+                        The average \(v_2\) invariant grows linearly with the number of crossings \(n\)
+                    </x-block>
+                    <p>In agreement with quadratic growth in the Petaluma model (Even Zohar <em>et al.</em> 2016); \(m\) petals can correspond to \(O(m^2)\) crossings</p>
+                    <p>Normalize statistics: Subtract off least-squares linear fit</p>
+                </section>
+
+                <section>
+                    <h2>Average \(v_2\) Vassiliev Invariant</h2>
+                    <div class="fig-container" style="height: 600px; width:100%; display: inline-block;" data-style="width:100%; height:100%;"
+                         data-file="fig_v2ivt.html"></div>
+                </section>
+
+                <section>
+                    <h2>Classical Questions</h2>
+                    <p>Efficiency and speed of convergence is related to classical questions</p>
+                    <x-block>
+                        <h2>Question</h2>
+                        What is the <strong>diameter</strong> of any fixed knot type Reidemeister graph?
+                    </x-block>
+                    <x-theorem>
+                        <h2>Lackenby '15</h2>
+                        An unknot diagram \(D\) of \(n\) crossings can be reduced to the trivial diagram in at most \((236n)^{11}\) Reidemeister moves
+                    </x-theorem>
+                </section>
+
+                <section>
+                    <h2>(Unknotting) Experiments</h2>
+                    <p>Viewing Markov chain as "BFACF for diagrams" suggests experiments on diagrams, such as:</p>
+                    <x-block>
+                        <h2>Experiment (Stolz <em>et al.</em> 2017)</h2>
+                        Find most probable unlinking pathways of <em>E. coli</em> DNA under XerCD-<em>dif</em>-FtsK site-specific recombination, using SAPs and local reconnection at edge-edge contacts
+                    </x-block>
+                    <x-block>
+                        <h2>Experiment</h2>
+                        Repeat above, using <strong>knot diagrams</strong> and <strong>coherent smoothing</strong> at crossings
+                    </x-block>
                 </section>
 
                 <section class="center">
                     <h2>Thank you!</h2>
+                    <p>H. Chapman and A. Rechnitzer. <em>A Markov chain sampler for plane curves</em>. Submitted.</p>
                 </section>
 			      </div>
 		    </div>
@@ -199,7 +347,7 @@
 			   // - https://github.com/hakimel/reveal.js#dependencies
 			   Reveal.initialize({
              center: false,
-             transition: "slide",
+             transition: "fade",
              viewDistance: 3,
              history: true,
              reveald3: {

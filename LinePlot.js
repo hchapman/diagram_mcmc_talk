@@ -83,13 +83,11 @@
 
              xScale
                  .domain(xRawDomain)
-                 .range([0, innerWidth])
-                 .nice();
+                 .range([0, innerWidth]);
 
              yScale
                  .domain(yRawDomain)
-                 .range([innerHeight, 0])
-                 .nice();
+                 .range([innerHeight, 0]);
 
              xAxisG.call(xAxis);
              yAxisG.call(yAxis);
@@ -99,16 +97,37 @@
              var viewW = xRawDomain[1]-xRawDomain[0];
              var viewH = yRawDomain[1]-yRawDomain[0];
 
-             plotG = g.append("g");
-             plotG.attr("transform", `matrix(${innerWidth/viewW} 0 0 ${-innerHeight/viewH} ${-innerWidth*viewX/viewW} ${innerHeight*(viewH+viewY)/viewH})`);
+             var clipG = g.selectAll('.plot-clip').data([null]);
+             var clipGEnter = clipG
+                 .enter()
+                 .append("g")
+                 .attr("class", "plot-clip")
+                 .attr("clip-path", "url(#clip)");
 
-             plotG.append("clipPath")
-                 .attr("id", "clip")
+             clipG = clipGEnter.merge(clipG);
+
+             var clipEnter = g.selectAll('clipPath').data([null])
+                 .enter()
+                 .append("clipPath")
+                 .attr("id", "clip");
+
+             g.selectAll('clipPath').selectAll('rect').data([{'width': innerWidth, 'height': innerHeight}])
+                 .enter()
                  .append("rect")
-                 .attr("x", viewX)
-                 .attr("y", viewY)
-                 .attr("width", viewW)
-                 .attr("height", viewH);
+                 .attr("x", 0)
+                 .attr("y", 0)
+                 .merge(g.select("clipPath").selectAll('rect'))
+                 .attr("width", d => d.width)
+                 .attr("height", d => d.height);
+
+             plotG = clipG.selectAll("g").data([null]);
+
+             plotG = plotG
+                 .enter()
+                 .append("g")
+                 .merge(plotG)
+                 .attr("transform",
+                       `matrix(${innerWidth/viewW} 0 0 ${-innerHeight/viewH} ${-innerWidth*viewX/viewW} ${innerHeight*(viewH+viewY)/viewH})`);
 
              const errors = plotG.selectAll('.path-error').data(lines);
              errors
@@ -116,8 +135,7 @@
                  .append("path")
                  .attr("class", l => l.cls)
                  .classed("area", true)
-                 .classed("path-error", true)
-                 .attr("clip-path", "url(#clip)");
+                 .classed("path-error", true);
 
              plotG.selectAll('.path-error')
               .attr("d", l => to_filtered_areaerror(l, data));
@@ -129,8 +147,8 @@
                  .attr('fill', 'none')
                  .attr('class', l => l.cls)
                  .classed('path-data', true)
-                 .classed('chart-zoom', true)
-                 .attr("clip-path", "url(#clip)");
+                 .classed('chart-zoom', true);
+
              plotG.selectAll('.path-data')
               .attr('d', l => to_filtered_linedata(l, data));
 
@@ -143,7 +161,9 @@
                      .useClass(true)
                      .scale(ordinal);
 
-                 g.append("g")
+                 g.selectAll(".legend").data([null])
+                     .enter()
+                     .append("g")
                      .attr("class", "legend")
                      .attr("transform", "translate(20,20)");
 
@@ -261,21 +281,15 @@
              var viewW = xRawDomain[1]-xRawDomain[0];
              var viewH = yRawDomain[1]-yRawDomain[0];
 
-
              xScale.domain(xRawDomain);
              yScale.domain(yRawDomain);
              var t = g.transition().duration(750);
              xAxisG.transition(t).call(xAxis);
              yAxisG.transition(t).call(yAxis);
 
-             plotG.selectAll("clipPath rect").transition(t)
-                 .attr("x", viewX)
-                 .attr("y", viewY)
-                 .attr("width", viewW)
-                 .attr("height", viewH);
-
              plotG.transition(t)
-             .attr("transform", `matrix(${innerWidth/viewW} 0 0 ${-innerHeight/viewH} ${-innerWidth*viewX/viewW} ${innerHeight*(viewH+viewY)/viewH})`);
+                 .attr("transform",
+                       `matrix(${innerWidth/viewW} 0 0 ${-innerHeight/viewH} ${-innerWidth*viewX/viewW} ${innerHeight*(viewH+viewY)/viewH})`);
          };
 
          return my;

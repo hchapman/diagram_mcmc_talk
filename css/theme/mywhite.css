@@ -271,3 +271,11 @@ body {
 @media print {
   .backgrounds {
     background-color: #fff; } }
+
+ul.relaxed li {
+    margin-bottom: .5em;
+}
+
+.width-80 {
+    width: 80%;
+}

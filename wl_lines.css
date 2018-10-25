@@ -5,6 +5,14 @@
     fill: steelblue;
 }
 
+.path-data.mean-fit {
+    stroke: orange;
+    stroke-dasharray: 4 3;
+}
+.swatch.mean-fit, .area.mean-fit {
+    fill:orange;
+}
+
 .path-data.uniform {
     stroke: orange;
 }

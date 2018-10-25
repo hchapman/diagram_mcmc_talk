@@ -8,7 +8,7 @@
     <link rel="stylesheet" type="text/css" href="gauss_diagram.css">
 
     <div>
-        <input type="range" min="0" class="slider" style="width: 100%;">
+        <input type="range" min="0" class="slider" style="width: 100%; position:relative; z-index:1000">
     </div>
     <div id="visualization"></div>
     <script>
@@ -20,6 +20,30 @@
      var margin = 20;
      var width = 100;
      var height = 100;
+
+     var t;
+     var maxFrame;
+     var slider = d3.select(".slider");
+
+     // transitions for reveal.js fragments
+     var _transitions = [
+         {
+             transitionBackward: function() {
+                 t.stop();
+             },
+             transitionForward: function() {
+                 animate(0,1);
+             },
+         },
+         {
+             transitionBackward: function() {
+                 animate(0,1);
+             },
+             transitionForward: function() {
+                 t.stop();
+             },
+         },
+     ];
 
      const visualization = d3.select('#visualization');
      const visualizationDiv = visualization.node();
@@ -50,7 +74,6 @@
 
      edges = [];
 
-     console.log(nodes);
      nodes.forEach( function(d) {
          if(!edges[d.edge]) {
              edges[d.edge] = {
@@ -64,8 +87,6 @@
 
      var radius = width/2;
 
-     console.log(edges);
-
      g.append('circle')
       .attr('cx', 0)
       .attr('cy', 0)
@@ -75,6 +96,25 @@
 
      var gaussFrames = d3.scaleThreshold();
 
+     var fps = 240;
+     var fpms = fps/1000;
+     function animate(startFrame, mul) {
+         t = d3.timer(function(elapsed) {
+             var frame = startFrame + mul*elapsed*fpms;
+
+             if (frame > maxFrame) {
+                 t.stop();
+                 animate(maxFrame, -1);
+                 return;
+             } else if (frame < 0) {
+                 t.stop()
+                 animate(0, 1);
+             }
+
+             changeFrame(frame);
+             slider.property('value', frame);
+         });
+     }
 
      function changeFrame(t) {
          var frame = gaussFrames(t);
@@ -130,7 +170,6 @@
          circleNodes.exit().remove();
      };
 
-     var t;
      d3.json("gauss_frames.json", function(data) {
          gaussFrames.domain(data.slice(1).map( d => d.t )) // <-- slo-mo + failed transitions
          //gaussFrames.domain(data.slice(1).map( (d,i) => i+1 )) // <-- skip fails
@@ -169,32 +208,12 @@
                     } ));
 
 
-         var maxFrame = d3.max(gaussFrames.domain());
-         var slider = d3.select(".slider");
+         maxFrame = d3.max(gaussFrames.domain());
+         
 
          //changeFrame(3000);
 
-         var t;
-         var fps = 240;
-         var fpms = fps/1000;
-         function animate(startFrame, mul) {
-             t = d3.timer(function(elapsed) {
-                 var frame = startFrame + mul*elapsed*fpms;
-
-                 if (frame > maxFrame) {
-                     t.stop();
-                     animate(maxFrame, -1);
-                     return;
-                 } else if (frame < 0) {
-                     t.stop()
-                     animate(0, 1);
-                 }
-
-                 changeFrame(frame);
-                 slider.property('value', frame);
-             });
-         }
-
+         
          slider.attr('max', maxFrame);
          slider.on('input', function(e) {
              t.stop();
@@ -205,8 +224,7 @@
              animate(+this.value, 1);
          });
 
-         animate(0, 1);
-
+         changeFrame(0);
      });
 
     </script>
