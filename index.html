@@ -36,8 +36,9 @@
                     <div style="display:inline-block; width:45%;margin-bottom:2em;">
                         <span style="font-size: 100%;">Andrew Rechnitzer</span><br>
                         <span style="font-size: 90%;">University of British Columbia</span></div>
+                    <p><a href="https://hchapman.github.io/talks/amssf_markov/">hchapman.github.io/talks/amssf_markov</a></p>
                     <p style="font-size:80%;">
-                        Special Section on Mathematical Methods for the Study<br>
+                        Special Session on Mathematical Methods for the Study<br>
                         of the Three Dimensional Structure of Biopolymers
                     </p>
                     <p style="font-size:70%;">
@@ -94,9 +95,11 @@
                         <h3>Direct sampling</h3>
                         <p><strong>No known algorithms</strong> for <strong>directly sampling</strong> knot diagrams uniformly</p>
                         <p>&nbsp;</p>
-                        <p>Related to <strong>lack of exact enumeration</strong> \(\{k_n\}\) for knot diagrams
-                            \[ k_n \sim C\mu^n n^{\gamma-2}(1 + O(1/\log n)) \quad \text{(conj.)} \]
-                        </p>
+                        <p>Related to <strong>lack of exact enumeration</strong> \(\{k_n\}\) for knot diagrams</p>
+                            <x-block>
+                                <h2>Conjecture (Schaeffer-Zinn Justin '04)</h2>
+                                \[ k_n \sim C\mu^n n^{\gamma-2}(1 + O(1/\log n)) \]
+                            </x-block>
                     </section>
                     <section>
                         <h2>Uniform Random Sampling</h2>
@@ -148,7 +151,7 @@
                     <p><strong>Aperiodic</strong> as there is always a chance a transition fails</p>
                     <p><strong>Connected</strong> as all valid transitions have nonzero probability and;</p>
                     <x-theorem>
-                        <h2>Alexander-Briggs, Reidemeister 1927</h2>
+                        <h2>Alexander-Briggs, Reidemeister '27</h2>
                         Any two knot diagrams of knot type \(K\) are related by a finite sequence of Reidemeister moves
                     </x-theorem>
                     <p>We weight transition probabilities to enforce <strong>detailed balance</strong>, that
@@ -180,7 +183,7 @@
 				        <section>
                     <h2>Stationary Distribution</h2>
                     <x-theorem>
-                        <h2>C&ndash;Rechnitzer 2018</h2>
+                        <h2>C&ndash;Rechnitzer '18</h2>
                         This Markov chain has stationary distribution where the probability that an \(n\)-crossing diagram \(D\) is sampled is,
                         \[ \pi(D) \propto \frac{1}{g_n} \approx \frac{1}{k_n}. \]
                     </x-theorem>
@@ -295,7 +298,7 @@
                         <h2>Conjecture</h2>
                         The average \(v_2\) invariant grows linearly with the number of crossings \(n\)
                     </x-block>
-                    <p>In agreement with quadratic growth in the Petaluma model (Even Zohar <em>et al.</em> 2016); \(m\) petals can correspond to \(O(m^2)\) crossings</p>
+                    <p>In agreement with quadratic growth in the Petaluma model (Even Zohar <em>et al.</em> '16); \(m\) petals can correspond to \(O(m^2)\) crossings</p>
                     <p>Normalize statistics: Subtract off least-squares linear fit</p>
                 </section>
 
@@ -322,7 +325,7 @@
                     <h2>(Unknotting) Experiments</h2>
                     <p>Viewing Markov chain as "BFACF for diagrams" suggests experiments on diagrams, such as:</p>
                     <x-block>
-                        <h2>Experiment (Stolz <em>et al.</em> 2017)</h2>
+                        <h2>Experiment (Stolz <em>et al.</em> '17)</h2>
                         Find most probable unlinking pathways of <em>E. coli</em> DNA under XerCD-<em>dif</em>-FtsK site-specific recombination, using SAPs and local reconnection at edge-edge contacts
                     </x-block>
                     <x-block>
