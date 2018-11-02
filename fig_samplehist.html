@@ -4,7 +4,7 @@
     <script src="js/d3.v4.min.js"></script>
     <script src="js/d3-legend.min.js"></script>
     <script src="LinePlot.js"></script>
-    <link rel="stylesheet" type="text/css" href="LinePlotMini.css">
+    <link rel="stylesheet" type="text/css" href="LinePlot.css">
     <link rel="stylesheet" type="text/css" href="wl_lines.css">
 
     <div id="visualization"></div>
@@ -17,8 +17,8 @@
      const linePlot = LinePlot();
 
      const _viewPorts = [
-         [50, 0,   100,  2.1],
-         [0,  0,   500, 10 ]
+         [0,  38000,   500, 42000],
+         [0, 0,   500,  50000],
      ];
 
      // transitions for reveal.js fragments
@@ -42,53 +42,35 @@
 
          linePlot
              .xValue(d => d.N)
-             .yValue(d => d.wl_1gons)
+             .yValue(d => d.Count)
              .viewPort(_viewPorts[0])
-             .hasLegend(false)
-             .margin({top: 15, right: 30, bottom: 60, left: 70})
-             .xAxisLabelOffset(50)
-             .yAxisLabelOffset(-50)
              .xLabel("Number of Crossings")
-             .yLabel("Normalized 1-gons");
+             .yLabel("Number of curves sampled");
 
          const row = d => {
              d.N = +d.N;
-             d.wl_1gons = +d.wl_1gons;
-             d.wl_1gons_err = +d.wl_1gons_err;
-
-             d.uf_1gons = +d.uf_1gons;
-             d.uf_1gons_err = +d.uf_1gons_err;
-
-             d.am_1gons = +d.am_1gons;
-             d.am_1gons_err = +d.am_1gons_err;
+             d.Count = +d.Count;
+             d.meanY = 40000
              return d;
          }
 
          linePlot.addLine({
-             title: "Wang Landau",
+             title: "Number sampled",
              cls: 'wang-landau',
              x: (d) => { return d.N; },
-             y: (d) => { return delinearize(d.N, d.wl_1gons); },
-             yerr: (d) => d.wl_1gons_err,
+             y: (d) => { return d.Count; },
+             yerr: d=>0,
          });
 
          linePlot.addLine({
-             title: "Uniform",
-             cls: 'uniform',
-             x: (d) => { return d.N; },
-             y: (d) => { return delinearize(d.N, d.uf_1gons); },
-             yerr: (d) => d.uf_1gons_err,
+             title: "Mean μ = 40000",
+             cls: 'mean-fit',
+             x: d => d.N,
+             y: d => d.meanY,
+             yerr: d=> null,
          });
 
-         linePlot.addLine({
-             title: "All maps",
-             cls: 'allmaps',
-             x: (d) => { return d.N; },
-             y: (d) => { return delinearize(d.N, d.am_1gons); },
-             yerr: (d) => d.am_1gons_err,
-         });
-
-         d3.tsv("compare_degrees.tsv", row, function(data) {
+         d3.tsv("wl_500_goodrun_data.tsv", row, function(data) {
              linePlot.data(data);
 
              const render = () => {

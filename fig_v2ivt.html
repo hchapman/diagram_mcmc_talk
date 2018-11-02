@@ -4,21 +4,22 @@
     <script src="js/d3.v4.min.js"></script>
     <script src="js/d3-legend.min.js"></script>
     <script src="LinePlot.js"></script>
-    <link rel="stylesheet" type="text/css" href="LinePlotMini.css">
+    <link rel="stylesheet" type="text/css" href="LinePlot.css">
     <link rel="stylesheet" type="text/css" href="wl_lines.css">
 
     <div id="visualization"></div>
     <script>
 
      function delinearize(x, y) {
-         return y - (x+2)/3;
+         return y - 0.0268*x;
      }
 
      const linePlot = LinePlot();
 
      const _viewPorts = [
-         [50, 0,   100,  2.1],
-         [0,  0,   500, 10 ]
+         [40,  -0.18,   100, -0.13],
+         [0, -0.2,   200,  -0.1],
+         [0, -0.2,   500,  -0.1]
      ];
 
      // transitions for reveal.js fragments
@@ -44,23 +45,16 @@
              .xValue(d => d.N)
              .yValue(d => d.wl_1gons)
              .viewPort(_viewPorts[0])
-             .hasLegend(false)
-             .margin({top: 15, right: 30, bottom: 60, left: 70})
-             .xAxisLabelOffset(50)
-             .yAxisLabelOffset(-50)
              .xLabel("Number of Crossings")
-             .yLabel("Normalized 1-gons");
+             .yLabel("Normalized average Casson invariant");
 
          const row = d => {
              d.N = +d.N;
-             d.wl_1gons = +d.wl_1gons;
-             d.wl_1gons_err = +d.wl_1gons_err;
+             d.wl_v2inv = +d.wl_v2inv;
+             d.wl_v2inv_err = +d.wl_v2inv_err;
 
-             d.uf_1gons = +d.uf_1gons;
-             d.uf_1gons_err = +d.uf_1gons_err;
-
-             d.am_1gons = +d.am_1gons;
-             d.am_1gons_err = +d.am_1gons_err;
+             d.uf_v2inv = +d.uf_v2inv;
+             d.uf_v2inv_err = +d.uf_v2inv_err;
              return d;
          }
 
@@ -68,27 +62,19 @@
              title: "Wang Landau",
              cls: 'wang-landau',
              x: (d) => { return d.N; },
-             y: (d) => { return delinearize(d.N, d.wl_1gons); },
-             yerr: (d) => d.wl_1gons_err,
+             y: (d) => { return delinearize(d.N, d.wl_v2inv); },
+             yerr: (d) => d.wl_v2inv_err,
          });
 
          linePlot.addLine({
              title: "Uniform",
              cls: 'uniform',
              x: (d) => { return d.N; },
-             y: (d) => { return delinearize(d.N, d.uf_1gons); },
-             yerr: (d) => d.uf_1gons_err,
+             y: (d) => { return delinearize(d.N, d.uf_v2inv); },
+             yerr: (d) => d.uf_v2inv_err,
          });
 
-         linePlot.addLine({
-             title: "All maps",
-             cls: 'allmaps',
-             x: (d) => { return d.N; },
-             y: (d) => { return delinearize(d.N, d.am_1gons); },
-             yerr: (d) => d.am_1gons_err,
-         });
-
-         d3.tsv("compare_degrees.tsv", row, function(data) {
+         d3.tsv("compare_v2.tsv", row, function(data) {
              linePlot.data(data);
 
              const render = () => {
