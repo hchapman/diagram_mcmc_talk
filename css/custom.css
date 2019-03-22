@@ -1,0 +1,6 @@
+.reveal .slides section .fragment.fade-right {
+  transform: translate(-20%, 0); }
+  .reveal .slides section .fragment.fade-right.visible {
+    transform: translate(0, 0); }
+
+/*# sourceMappingURL=custom.css.map */

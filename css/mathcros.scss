@@ -1,8 +1,13 @@
-x-block, x-theorem, x-definition, x-corollary, x-lemma {
+x-block, x-theorem, x-definition, x-corollary, x-lemma, x-conjecture {
     > h2 {
         margin-bottom: 0px !important;
         text-align: left;
         font-size: 1.2em !important;
+    }
+
+    > div.MathJax_Display {
+        margin-top: .3em;
+        margin-bottom: .3em;
     }
 
     display: inline-block;
@@ -23,6 +28,15 @@ x-theorem > h2 {
     }
 }
 
+x-conjecture > h2 {
+    &:before {
+        content: "Conjecture (";
+    }
+    &:after {
+        content: ")";
+    }
+}
+
 x-definition > h2 {
     &:before {
         content: "Definition";
@@ -30,4 +44,42 @@ x-definition > h2 {
     &:after {
         content: "";
     }
+}
+
+x-corollary >h2 {
+    &:before {
+        content: "Corollary (";
+    }
+    &:after {
+        content: ")";
+    }
+}
+
+x-source {
+    &:before {
+        content: "(Source: ";
+    }
+    &:after {
+        content: ")";
+    }
+
+    font-size: .8em;
+    display: block;
+    margin-bottom: .5em;
+}
+
+.reveal table td.number-cell {
+    text-align: right;
+}
+
+ol.comfy, ul.comfy {
+    > li:not(:last-child) {
+        margin-bottom:0.5em;
+    }
+}
+
+.not-wide {
+    width: 80%;
+    margin-left: auto !important;
+    margin-right: auto !important;
 }

@@ -1,0 +1,7 @@
+.reveal .slides section .fragment.fade-right {
+	  transform: translate(-20%, 0);
+
+	  &.visible {
+		    transform: translate(0, 0);
+	  }
+}

@@ -4,7 +4,7 @@
 		    <meta charset="utf-8">
 		    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		    <title>A Markov chain sampler for knot diagrams</title>
+		    <title>Steady states for crossing changes in knot diagrams</title>
 
 		    <link rel="stylesheet" href="css/reveal.css">
 		    <link rel="stylesheet" href="css/theme/mywhite.css">
@@ -21,117 +21,127 @@
 			   link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
 			   document.getElementsByTagName( 'head' )[0].appendChild( link );
 		    </script>
+        <style>
+         body {
+             //background-color: #999;
+         }
+         div.slides {
+             //background-color: #fff;
+         }
+        </style>
 	  </head>
 	  <body>
 		    <div class="reveal">
 			      <div class="slides">
 
-				        <section class="center">
-                    <h1>A Markov Chain Sampler<br>for Knot Diagrams</h1>
+				        <section class="center"
+                         data-background-image="static_figs/300primealt_viridis_2.svg"
+                         data-background-opacity="0.2">
+                    <div style="position: relative">
+                    <h1 class="fragment fade-out" data-fragment-index="1">New questions<br>for knot diagrams</h1>
+                    <h1 class="fragment fade-in" data-fragment-index="1"
+                        style="position: absolute; width: 100%; top: 0px;">Steady states for crossing changes in knot diagrams</h1>
+                    </div>
 
-                    <div style="display:inline-block; width:45%; margin-bottom:2em;">
+                    <div style="display:inline-block; width:45%; margin-bottom:1em;">
                         <span style="font-size: 100%;"><strong>Harrison Chapman</strong></span><br>
                         <span style="font-size: 90%;"><strong>Colorado State University</strong></span>
                     </div>
-                    <div style="display:inline-block; width:45%;margin-bottom:2em;">
-                        <span style="font-size: 100%;">Andrew Rechnitzer</span><br>
-                        <span style="font-size: 90%;">University of British Columbia</span></div>
-                    <p><a href="https://hchapman.github.io/talks/amssf_markov/">hchapman.github.io/talks/amssf_markov</a></p>
+                    <p><a href="https://hchapman.org/talks/birs_steadystate/">hchapman.org/talks/birs_steadystate</a></p>
                     <p style="font-size:80%;">
-                        Special Session on Mathematical Methods for the Study<br>
-                        of the Three Dimensional Structure of Biopolymers
+                        The Topology of Nucleic Acids: <br>
+                        <span style="font-size:80%;">Research at the Interface
+                            of Low-Dimensional Topology,<br>
+                            Polymer Physics and Molecular Biology</span>
                     </p>
                     <p style="font-size:70%;">
-                        AMS 2018 Fall Western Sectional Meeting<br>
-                        SFSU, San Francisco CA<br>
-                        October 28<sup>th</sup> 2018
+                        Banff International Research Station<br>
+                        Banff, Alberta<br>
+                        March 24<sup>th</sup> 2019
                     </p>
                 </section>
 
                 <section>
                     <h2>Knot Diagrams</h2>
                     <p><strong>Crossings</strong> are the primary components of knot diagram models</p>
-                    <img style="height: 450px" class="plain" data-src="random_100kd.svg">
-                </section>
-
-                <section>
-                    <h2>Knot Diagrams and Knot Shadows</h2>
-                    <x-block>
-                        <h2>4-valent Maps</h2>
-                        A <strong>4-valent map</strong> is a 4-valent graph embedded in the sphere
-                    </x-block>
-                    <x-block>
-                        <h2>Knot Shadows</h2>
-                        A <strong>knot shadow</strong> or plane curve is a 4-valent map with one link component, and vertices viewed as <strong>crossings</strong>
-                    </x-block>
-                    <x-block>
-                        <h2>Knot Diagrams</h2>
-                        A <strong>knot diagram</strong> is a knot shadow with crossing signs indicating depth
-                    </x-block>
-                </section>
-
-                <section>
-                    <h2>Knot Diagrams and Link Diagrams</h2>
-                    <img style="height: 400px; margin-right:40px" class="plain" data-src="random_100kd.svg">
-                    <img style="height: 400px" class="plain" data-src="random_100ld.svg">
+                    <img style="height: 450px" class="plain" data-src="static_figs/random_prime_component.svg">
                 </section>
 
                 <section>
                     <h2>Crossings as Self-contacts</h2>
-                    <p>Crossings may be viewed as <strong>self-contacts</strong> where enzymes may act to change DNA topology</p>
+                    <p class="not-wide">Crossings may be viewed as <strong>self-contacts</strong> where enzymes may act to change DNA topology</p>
                     <p>
                         <img style="height: 150px; margin-bottom:-.5em" class="plain" data-src="static_figs/strand_passage.svg"><br>
                         Strand passage action, <em>e.g.</em> topo-IV
                     </p>
-                    <p>
+                    <p class="fragment semi-fade-out">
                         <img style="height: 150px; margin-bottom:-.5em" class="plain" data-src="static_figs/coherent_smoothing.svg"><br>
                         Coherent smoothing action, <em>e.g.</em> XerCD-<em>dif</em>-FtsK complex
                     </p>
                 </section>
 
                 <section>
-                    <section>
-                        <h2>Uniform Random Sampling</h2>
-                        <h3>Direct sampling</h3>
-                        <p><strong>No known algorithms</strong> for <strong>directly sampling</strong> knot diagrams uniformly</p>
-                        <p>&nbsp;</p>
-                        <p>Related to <strong>lack of exact enumeration</strong> \(\{k_n\}\) for knot diagrams</p>
-                            <x-block>
-                                <h2>Conjecture (Schaeffer-Zinn Justin '04)</h2>
-                                \[ k_n \sim C\mu^n n^{\gamma-2}(1 + O(1/\log n)) \]
-                            </x-block>
-                    </section>
-                    <section>
-                        <h2>Uniform Random Sampling</h2>
-                        <h3>Rejection sampling</h3>
-                        <p>Sample 4-valent maps uniformly, but only accept knot diagrams</p>
-                        <p>&nbsp;</p>
-                        <ul class="width-80 relaxed">
-                        <li>Samples diagrams of <strong>specified size</strong> \(n\)</li>
-                        <li>Distribution is <strong>exactly uniform</strong> across a size \(n\)</li>
-                        <li>Knots are <strong>rare</strong>; most samples <strong>rejected</strong></li>
-                        <li>Knots of <strong>fixed type</strong> are <strong>exponentially rare</strong> among all knots</li>
-                        </ul>
-                    </section>
-                    <section>
-                        <h2>Uniform Random Sampling</h2>
-                        <h3>Monte Carlo (MCMC) sampling</h3>
-                        <p>Sample states from Markov process that explores knot diagrams</p>
-                        <p>&nbsp;</p>
-                        <ul class="width-80 relaxed">
-                        <li>Samples diagrams of <strong>all possible sizes</strong></li>
-                        <li>Stationary distribution <strong>approximately uniform</strong> across any given size</li>
-                        <li><strong>Only knot diagrams</strong> are sampled</li>
-                        <li>Extends to sampling diagrams <strong>of any fixed type</strong></li>
-                        </ul>
-                    </section>
+                    <h2>A Prior Study</h2>
+                    <x-block>
+                        <h2>Hua, Nguyen, Raghavan, Arsuaga, Vasquez (2007)</h2>
+                        Calculated <strong>transition probabilities</strong> between
+                        knot types and <strong>steady-state probabilities</strong> of DNA
+                        molecules under the action of topo-IV.
+                    </x-block>
+
+                    <img
+                        style="height: 250px;"
+                        class="plain" data-src="static_figs/6_1toggle.svg">
                 </section>
 
                 <section>
-                    <h2>Diagram Markov Chains</h2>
-                    <p>One step of a <strong>diagram Markov chain</strong> takes as input a knot diagram, performs with some probability a <strong>Reidemeister transition</strong>, and returns the resulting knot diagram</p>
-                    
-                    <x-block><h2>Shadow Markov Chain</h2>
+                    <h2>Strategy of Hua et al.</h2>
+                    <x-block>
+                        <h2>Issue</h2>
+                        Action of topo-IV is easily expressed <strong>diagrammatically</strong>,
+                        but complex to represent with self-avoiding polygons (SAPs) alone
+                    </x-block>
+                    <x-block>
+                        <h2>Strategy</h2>
+                        Sample SAPs, then transfer to diagrams to study action of topo-IV
+                    </x-block>
+                </section>
+
+                <section>
+                    <h2>Strategy of Hua et al.</h2>
+                    <p class="not-wide">For each prime knot type \(K\), sample diagrams representing \(K\) from a <strong>weighted</strong> distribution:
+                        <ol class="not-wide comfy">
+                            <li>Sample SAPs representing \(K\) uniformly of desired sizes, using BFACF</li>
+                            <li>Randomly project to 50&ndash;100 diagrams</li>
+                            <li>Result is a list of diagrams for \(K\), weighted by occurrence: sample from this list uniformly</li>
+                        </ol></p>
+                    <x-block>
+                        <h2>Idea</h2>
+                        Crossings in diagrams drawn under weighted distribution
+                        likely represent crossings <strong>close</strong> in original SAPs
+                    </x-block>
+                </section>
+
+                <section>
+                    <h2>Dependence on Distribution?</h2>
+                    <x-block>
+                        <h2>Question</h2>
+                        How tied are the results of Hua et al. to the
+                        projection-weighted distribution on diagrams?
+                    </x-block>
+
+                    <p class="not-wide">
+                        Aim to answer this by applying the same techniques, now
+                        using <strong>uniform distribution on knotted diagrams</strong>
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Diagram MCMC</h2>
+                    <p>One step of a <strong>diagram Markov chain</strong> takes as input a knot diagram, performs with some probability a <strong>(Reidemeister) transition</strong>, and returns the resulting knot diagram</p>
+
+                    <x-block class="fragment semi-fade-out"
+                             data-fragment-index="2"><h2>Shadow Markov Chain</h2>
                         Explore all knot shadows by <strong>ignoring crossing signs</strong>; get all knot diagrams by adding crossing information
                     </x-block>
                     <x-block>
@@ -146,197 +156,230 @@
                     <img style="height: 195px" class="plain" data-src="static_figs/flatr3.svg">
                 </section>
 
-                <section>
-                    <h2>Ergodicity</h2>
-                    <p><strong>Aperiodic</strong> as there is always a chance a transition fails</p>
-                    <p><strong>Connected</strong> as all valid transitions have nonzero probability and;</p>
-                    <x-theorem>
-                        <h2>Alexander-Briggs, Reidemeister '27</h2>
-                        Any two knot diagrams of knot type \(K\) are related by a finite sequence of Reidemeister moves
-                    </x-theorem>
-                    <p>We weight transition probabilities to enforce <strong>detailed balance</strong>, that
-                    \[ P(D \to N) \pi(D) = P(N \to D)\pi(N) \] </p>
-                    <p>So the Markov chain is <strong>ergodic</strong></p>
-                </section>
-
-                <section>
-                    <section>
-                        <h2>Wang-Landau Transition Probabilities</h2>
-                        <x-block>
-                            <h2>Problem</h2>
-                            MCMC sampling samples diagrams of arbitrary size, rather than some fixed \(n\)
-                        </x-block>
-                        <x-block>
-                            <h2>Solution</h2>
-                            Choose transition probabilities to enforce distribution on sizes sampled
-                        </x-block>
-                    </section>
-                    <section>
-                        <h2>Wang-Landau Transition Probabilities</h2>
-                        <p>Given <em>a priori</em> approximate enumeration data \(\{g_n\}\) so that \(g_n \approx k_n\):</p>
-                        <p>Only perform transitions from \(n\)-crossing diagrams to \(m\) crossing diagrams with probability \(g_n/g_m\)</p>
-                        <br>
-                        <p>The approximate enumeration \(\{g_n\}\) can be calculated iteratively using the Markov process itself</p>
-                    </section>
-                </section>
-
 				        <section>
                     <h2>Stationary Distribution</h2>
                     <x-theorem>
-                        <h2>C&ndash;Rechnitzer '18</h2>
-                        This Markov chain has stationary distribution where the probability that an \(n\)-crossing diagram \(D\) is sampled is,
-                        \[ \pi(D) \propto \frac{1}{g_n} \approx \frac{1}{k_n}. \]
+                        <h2>C&ndash;Rechnitzer</h2>
+                        The Wang-Landau Markov chain on diagrams of knot type \(K\) has stationary distribution where the probability that an \(n\)-crossing diagram \(D\) representing \(K\) is sampled is,
+                        \[ \pi(D) \propto \frac{1}{g_n(K)} \approx \frac{1}{k_n(K)}. \]
                     </x-theorem>
-                    <p>Knot diagrams are sampled</p>
-                    <ul>
+                    <p>Knot diagrams for \(K\) are sampled</p>
+                    <ul class="comfy">
                         <li><strong>uniformly for any given size</strong>, and</li>
                         <li>approximately <strong>each size is equally likely</strong></li>
                     </ul>
                 </section>
 
                 <section>
-                    <h2>Shadow Markov Chain</h2>
-                    <p>Shadow Markov chan is nicer than fixed knot type Markov chain;</p>
-                    <x-theorem>
-                        <h2>Hass-Scott '94, de Graaf-Schrijver '97</h2>
-                        There exist paths connecting two shadows \(C\) and \(D\) only involving states with \(\le \max(|C|,|D|)\) crossings
-                    </x-theorem>
-                    <p>The shadow Markov chain is connected with maximum size limit</p>
-                    <p>Explore statistics for knot shadows and convergence of distribution</p>
-                </section>
-
-                <section style="text-align:center;">
-                    <h2>A Random Walk Through Shadows</h2>
-                    <p>Gauss diagram animation for 10000 attempted transition steps</p>
-                    <div class="fig-container" style="width: 500px; display: inline-block;"
-                         data-file="fig_gaussmovie.html"></div>
+                    <h2>Under the (Sampling) Hood</h2>
+                    <ul class="comfy not-wide">
+                        <li>Maximum diagram size considered: \(70\) crossings</li>
+                        <li>Enumeration step ran with flatness parameter
+                            \(\Delta = 0.99\) until update parameter \(f \le 10^{-6}\)</li>
+                        <li>Enumeration step took approximately 1d to tune all 36 knot types</li>
+                        <li>Samples drawn every \(10^{5}\) attempted MC transitions</li>
+                        <li>\(40,000\) diagrams sampled for each knot type (approx. \(600\) samples per diagram size)</li>
+                        <li>Data for each knot type gathered in approximately 7m</li>
+                    </ul>
                 </section>
 
                 <section>
-                    <h2>Sample Size Histogram</h2>
-                    <div class="fig-container" style="height: 600px; width:100%; display: inline-block;" data-style="width:100%; height:100%;"
-                         data-file="fig_samplehist.html"></div>
-                </section>
-
-                <section>
-                    <h2>Statistics and Comparisons</h2>
-                    <p>Check distribution validity by comparing statistics:</p>
-                    <x-block><h2>Face degrees</h2>
-                        Compare MCMC face degree statistics to rejection-sampled knot shadows and all 4-valent maps
-                    </x-block>
-                    <x-block><h2>Average \(v_2\) invariant</h2>
-                        Compare MCMC average Casson invariant statistics to rejection-sampled knot shadows
-                </section>
-
-                <section>
-                    <h2>Monogons in Shadows</h2>
-                    <p>In limit, \(\frac 13\) of faces in 4-valent maps are monogons</p>
-                    <p>Find that both samples of <strong>knot shadows</strong> have similar counts of monogons, both different from <strong>all maps</strong></p>
-                    <p>Normalize statistics: Subtract off limit linear behavior for all maps</p>
-                </section>
-
-                <section>
-                    <h2>Monogons in Shadows</h2>
-                    <div class="fig-container" style="height: 600px; width:100%; display: inline-block;" data-style="width:100%; height:100%;"
-                         data-file="fig_1gons.html"></div>
-                </section>
-
-                <section>
-                    <h2>Other faces in Shadows</h2>
-                    <p>Similar to monogons, we get linear behavior for all other face degrees</p>
-                    <p>Both knot shadow samplers yield similar counts</p>
-                    <p>Normalize statistics: Subtract off limit \(y = n p_{k}\) behavior of all maps</p>
-                    <table class="center-table">
+                    <h2>Approximate Enumeration: \(6_1\)</h2>
+                    <table>
                         <thead>
-                            <th align="center">\(n\)</th><th align="center">4-valent \(p_k\)</th>
-                            <th align="center">MCMC \(p_k\)</th>
+                            <tr>
+                                <th>\(n\)</th>
+                                <th>Rooted</th>
+                                <th>Rooted/\(4n\)</th>
+                                <th>Exact (CCM '16)</th>
+                            </tr>
                         </thead>
-                        <tr><td align="center">1</td>
-                            <td align="center">\(\tfrac 13 = 0.\overline{3}\)</td>
-                            <td align="center">\(0.35036 \pm 4(10^{-5})\)</td>
-                        </tr>
-                        <tr><td align="center">2</td>
-                            <td align="center">\(\tfrac 16 = 0.1\overline{6}\)</td>
-                            <td align="center">\(0.14056 \pm 3(10^{-5})\)</td>
-                        </tr>
-                        <tr><td align="center">3</td>
-                            <td align="center">\(\tfrac {13}{108} = 0.12\overline{037}\)</td>
-                            <td align="center">\(0.12257 \pm 3(10^{-5})\)</td>
-                        </tr>
-                        <tr><td align="center">4</td>
-                            <td align="center">\(\tfrac {55}{648} \approx 0.08488\)</td>
-                            <td align="center">\(0.08298 \pm 2(10^{-5})\)</td>
-                        </tr>
+                        <tbody>
+                            <tr><td class="number-cell">6</td>
+                                <td class="number-cell">12</td>
+                                <td class="number-cell">.5</td>
+                                <td class="number-cell">1</td>
+                            </tr>
+                            <tr><td class="number-cell">7</td>
+                                <td class="number-cell">911.68</td>
+                                <td class="number-cell">32.56</td>
+                                <td class="number-cell">34</td>
+                            </tr>
+                            <tr>
+                                <td class="number-cell">8</td>
+                                <td class="number-cell">40 207.17</td>
+                                <td class="number-cell">1 256.47</td>
+                                <td class="number-cell">1 267</td>
+                            </tr>
+                            <tr><td class="number-cell">9</td>
+                                <td class="number-cell">1 370 185.44</td>
+                                <td class="number-cell">38 060.71</td>
+                                <td class="number-cell">38 199</td>
+                            </tr>
+                            <tr><td class="number-cell">10</td>
+                                <td class="number-cell">40 659 767.57</td>
+                                <td class="number-cell">1 016 494.19</td>
+                                <td class="number-cell">1 015 996</td>
+                            </tr>
+                            <tr><td class="number-cell">11</td>
+                                <td class="number-cell">1 103 328 823.05</td>
+                                <td class="number-cell">25 075 655.07</td>
+                                <td class="number-cell">N/A</td></tr>
+                        </tbody>
                     </table>
-                    <p>2-gons and 4-gons are <strong>more rare</strong> in knot shadows; all other faces are more common</p>
+                    <p>Exact enumeration data from Cantarella-C-Mastin '16</p>
                 </section>
 
                 <section>
-                    <h2>1&ndash;4-gons in Shadows</h2>
-                    <div class="fig-container"
-                         style="width: 45%; height: 270px; display: inline-block;"
-                         data-style="width:100%; height:100%;"
-                         data-file="fig_1gons_mini.html"></div>
-                    <div class="fig-container"
-                         style="width: 45%; height: 270px; display: inline-block;"
-                         data-style="width:100%; height:100%;"
-                         data-file="fig_2gons_mini.html"></div>
-                    <div class="fig-container"
-                         style="width: 45%; height: 270px; display: inline-block;"
-                         data-style="width:100%; height:100%;"
-                         data-file="fig_3gons_mini.html"></div>
-                    <div class="fig-container"
-                         style="width: 45%; height: 270px; display: inline-block;"
-                         data-style="width:100%; height:100%;"
-                         data-file="fig_4gons_mini.html"></div>
+                    <h2>Diagram Sizes Sampled over Time: \(6_1\)</h2>
+                    <img class="plain" style="height:500px" data-src="static_figs/61_sizeseq.svg">
                 </section>
 
                 <section>
-                    <h2>Average \(v_2\) Vassiliev Invariant</h2>
-                    <p>The <strong>average \(v_2\) invariant</strong> over all crossing assignments of a plane curve is a spherical curve invariant</p>
+                    <h2>Strategy for Uniformly Sampled Diagrams</h2>
+                    <p class="not-wide">Now we just:
+                        <ol class="not-wide comfy"><li>For each prime knot type \(K\), sample diagrams representing \(K\) from the uniform distribution of a desired size range, using fixed-knot type diagram MCMC</li>
+                        </ol>
+                    </p>
+                    <p class="not-wide">
+                        Then, we apply the same analysis as in Hua et al.
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Steady States for Topo-IV Action</h2>
+                    <p class="not-wide">In either study, after sampling a diagram of type \(K\):
+                        <ol class="not-wide comfy">
+                            <li>Reduce the diagram fully by \(\mathrm{RI}^{-}\) and \(\mathrm{RII}^-\) moves<br> (except in the case of the unknot)</li>
+                        </ol>
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Reidemeister Transitions</h2>
+                    <img style="height: 126px" class="plain" data-src="static_figs/flatr1.svg">
+                    <img style="height: 126px" class="plain" data-src="static_figs/flatr2.svg">
+                    <img style="height: 195px" class="plain" data-src="static_figs/flatr3.svg">
+                </section>
+
+                <section>
+                    <h2>A Random, Non-Reduced \(6_1\)</h2>
+                    <img style="height:500px" class="plain" data-src="static_figs/6_1_pictures/6_1_img_10.svg">
+                </section>
+
+                <section>
+                    <h2>Reduced Diagram Size: \(6_1\)</h2>
+                    <p style="vertical-align: middle; padding-top: 80px;">
+                        <img style="vertical-align: middle; width:400px" class="plain" data-src="static_figs/61_reduceddist_hua.jpg">
+                        <img style="vertical-align: middle; width:400px" class="plain" data-src="static_figs/61_reducedsize_diagram.svg">
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Reduced Diagram Size: \(6_1\)</h2>
+                    <p style="vertical-align: middle; padding-top: 80px;">
+                        <img style="vertical-align: middle; width:400px" class="plain" data-src="static_figs/61_reduceddist_hua.jpg">
+                        <img style="vertical-align: middle; width:400px" class="plain" data-src="static_figs/61_reducedsize_mean53_diagram.svg">
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Steady States for Topo-IV Action</h2>
+                    <p class="not-wide">In either study, after sampling a diagram of type \(K\):
+                        <ol class="not-wide comfy">
+                            <li>Reduce the diagram fully by \(\mathrm{RI}^{-}\) and \(\mathrm{RII}^-\) moves<br> (except in the case of the unknot)</li>
+                            <li>Pick a crossing uniformly at random and make a crossing change</li>
+                            <li>If the resulting knot type is sufficiently small (\(cr(L) \le 8\)) and prime, record it</li>
+                        </ol>
+                    </p>
                     <x-block>
-                        <h2>Conjecture</h2>
-                        The average \(v_2\) invariant grows linearly with the number of crossings \(n\)
+                        After normalizing, result is a vector of <strong>transition probabilities</strong> for knot type \(K\)
                     </x-block>
-                    <p>In agreement with quadratic growth in the Petaluma model (Even Zohar <em>et al.</em> '16); \(m\) petals can correspond to \(O(m^2)\) crossings</p>
-                    <p>Normalize statistics: Subtract off least-squares linear fit</p>
                 </section>
 
                 <section>
-                    <h2>Average \(v_2\) Vassiliev Invariant</h2>
-                    <div class="fig-container" style="height: 600px; width:100%; display: inline-block;" data-style="width:100%; height:100%;"
-                         data-file="fig_v2ivt.html"></div>
+                    <h2>Topo-IV Transition Probabilities: \(6_1\)</h2>
+                    <p style="vertical-align: middle; padding-top: 80px;">
+                        <img style="vertical-align: middle; width:400px" class="plain" data-src="static_figs/61_strandpassages_hua.jpg">
+                        <img style="vertical-align: middle; width:400px" class="plain" data-src="static_figs/61_strandpassages_diagram.svg">
+                    </p>
                 </section>
 
                 <section>
-                    <h2>Classical Questions</h2>
-                    <p>Efficiency and speed of convergence is related to classical questions</p>
-                    <x-block>
-                        <h2>Question</h2>
-                        What is the <strong>diameter</strong> of any fixed knot type Reidemeister graph?
-                    </x-block>
-                    <x-theorem>
-                        <h2>Lackenby '15</h2>
-                        An unknot diagram \(D\) of \(n\) crossings can be reduced to the trivial diagram in at most \((236n)^{11}\) Reidemeister moves
-                    </x-theorem>
+                    <h2>Topo-IV Transition Probabilities: \(6_1\)</h2>
+                    <p style="vertical-align: middle; padding-top: 80px;">
+                        <img style="vertical-align: middle; width:400px" class="plain" data-src="static_figs/61_strandpassages_hua.jpg">
+                        <img style="vertical-align: middle; width:400px" class="plain" data-src="static_figs/61_strandpassages_mean53_diagram.svg">
+                    </p>
                 </section>
 
                 <section>
-                    <h2>(Unknotting) Experiments</h2>
-                    <p>Viewing Markov chain as "BFACF for diagrams" suggests experiments on diagrams, such as:</p>
+                    <h2>Steady States for Topo-IV Action</h2>
+                    <p class="not-wide">
+                        Gathering data for each prime knot type \(K\) of up to 8 crossings yields a square stochastic matrix \(M\)
+                    </p>
                     <x-block>
-                        <h2>Experiment (Stolz <em>et al.</em> '17)</h2>
-                        Find most probable unlinking pathways of <em>E. coli</em> DNA under XerCD-<em>dif</em>-FtsK site-specific recombination, using SAPs and local reconnection at edge-edge contacts
-                    </x-block>
-                    <x-block>
-                        <h2>Experiment</h2>
-                        Repeat above, using <strong>knot diagrams</strong> and <strong>coherent smoothing</strong> at crossings
+                        The eigenvector associated to the largest eigenvalue of \(M\) is the <strong>steady state</strong> of the system.
                     </x-block>
                 </section>
 
-                <section class="center">
+                <section>
+                    <h2>Topo-IV Steady State Distributions</h2>
+                    <p style="vertical-align: middle; padding-top: 80px;">
+                        <img style="vertical-align: middle; width:400px" class="plain" data-src="static_figs/61_steadystate_hua.jpg">
+                        <img style="vertical-align: middle; width:400px" class="plain" data-src="static_figs/61_steadystate_diagram.svg">
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Topo-IV Steady State Distributions</h2>
+                    <p style="vertical-align: middle; padding-top: 80px;">
+                        <img style="vertical-align: middle; width:400px" class="plain" data-src="static_figs/61_steadystate_hua.jpg">
+                        <img style="vertical-align: middle; width:400px" class="plain" data-src="static_figs/61_steadystate_mean53_diagram.svg">
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Topo-IV Steady State Distributions</h2>
+                    <p style="vertical-align: middle; padding-top: 80px;">
+                        <img style="vertical-align: middle; width:400px" class="plain" data-src="static_figs/61_steadystate_lt_hua.jpg">
+                        <img style="vertical-align: middle; width:400px" class="plain" data-src="static_figs/61_steadystate_lt_diagram.svg">
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Rescaling the \(x\)-axis?</h2>
+                    <p style="not-wide">
+                        The expected average crossing number over all projections of a \(M\)-edge Gaussian random polygon is \(O(M \ln M)\)
+                    </p>
+                    <p style="not-wide">
+                        Can rescale \(x\)-axis by \(e^{W_0(n)}\)
+                        where \(W_0\) is the main branch of the Lambert \(W\) function (satisfying \(z = W(ze^z)\))
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Topo-IV Steady State Distributions</h2>
+                    <p style="vertical-align: middle; padding-top: 80px;">
+                        <img style="vertical-align: middle; width:400px" class="plain" data-src="static_figs/61_steadystate_lt_hua.jpg">
+                        <img style="vertical-align: middle; width:400px" class="plain" data-src="static_figs/61_steadystate_w0lt_diagram.svg">
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Questions and Take-aways</h2>
+                    <ol class="comfy not-wide">
+                        <li>Do these data show a key difference between diagrams and space polygons?</li>
+                        <li>Uniform diagram sampler allows new tests for null
+                            hypotheses in many other previous experiments (e.g. Stolz et al. '17 work on XerCD-dif-FtsK in E. coli)</li>
+                        <li>Wang-Landau approximate enumeration provides new enumeration of numbers of diagrams for given knot types </li>
+                    </ol>
+                </section>
+
+                <section class="center"
+                         data-background-image="static_figs/300primealt_viridis_2.svg"
+                         data-background-opacity="0.2">
                     <h2>Thank you!</h2>
-                    <p>H. Chapman and A. Rechnitzer. <em>A Markov chain sampler for plane curves</em>. Submitted.</p>
                 </section>
 			      </div>
 		    </div>
@@ -350,7 +393,7 @@
 			   // - https://github.com/hakimel/reveal.js#dependencies
 			   Reveal.initialize({
              center: false,
-             transition: "fade",
+             transition: "none",
              viewDistance: 3,
              history: true,
              reveald3: {
@@ -363,7 +406,6 @@
 					       { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
                  { src: 'plugin/math/math.js', async:true },
                  { src: 'plugin/reveald3/reveald3.js' }
-
 				     ]
 			   });
 		    </script>
